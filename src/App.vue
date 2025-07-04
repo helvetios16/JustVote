@@ -1,5 +1,5 @@
 <template>
-  <h1 class="text-blue-950">JustVote</h1>
+  <RouterView />
 </template>
 
 <script setup lang="ts"></script>
