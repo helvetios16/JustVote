@@ -1,7 +1,7 @@
 <template>
-  <div class="form-container p-8 md:p-12 rounded-xl shadow-2xl w-full max-w-md text-white">
+  <div class="form-container p-8 md:p-12 rounded-xl shadow-2xl w-full max-w-md text-text-main">
     <button
-      class="w-full button-gradient-logo text-white font-medium py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500"
+      class="w-full button-gradient-logo text-text-main font-medium py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500"
       type="button"
     >
       <img alt="Google logo" class="w-5 h-5 mr-3" :src="logoGoogle" />
@@ -11,7 +11,7 @@
 
     <!-- GitHub -->
     <button
-      class="mt-4 w-full button-gradient-logo text-white font-medium py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-gray-500"
+      class="mt-4 w-full button-gradient-logo text-text-main font-medium py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-gray-500"
       type="button"
     >
       <img alt="GitHub logo" class="w-5 h-5 mr-3" :src="logoGithub" />
@@ -20,7 +20,7 @@
 
     <!-- Microsoft -->
     <button
-      class="mt-4 w-full button-gradient-logo text-white font-medium py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500"
+      class="mt-4 w-full button-gradient-logo text-text-main font-medium py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500"
       type="button"
     >
       <img alt="Microsoft logo" class="w-5 h-5 mr-3" :src="logoMicrosoft" />

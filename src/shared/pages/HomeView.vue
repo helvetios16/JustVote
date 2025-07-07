@@ -13,7 +13,11 @@
     ></div>
     <main class="z-10 text-center p-8">
       <h1 class="text-5xl font-bold tracking-wider">YOU'RE NOT FUTURE</h1>
-      <h4 class="text-2xl font-bold mb-8 tracking-wider">#JustVote</h4>
+      <h4 class="text-2xl font-bold mb-8 tracking-wider">
+        <span class="bg-gradient-to-r from-indigo-400 to-fuchsia-500 bg-clip-text text-transparent">
+          #JustVote
+        </span>
+      </h4>
 
       <RouterLink
         to="/auth/sign-in"
@@ -22,7 +26,11 @@
         ENTER
       </RouterLink>
     </main>
-    <footer class="absolute bottom-4 left-4 text-sm text-text-secondary">JustVote</footer>
+    <footer class="absolute bottom-4 left-4 text-sm text-text-secondary">
+      <span class="bg-gradient-to-r from-indigo-400 to-fuchsia-500 bg-clip-text text-transparent">
+        JustVote
+      </span>
+    </footer>
   </body>
 </template>
 
