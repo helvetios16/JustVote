@@ -1,1 +1,20 @@
 @import 'tailwindcss';
+
+:root {
+  --gradient-start: #0f172a;
+  --gradient-mid: #1e293b;
+  --gradient-end: #334155;
+  --form-bg: rgba(17, 24, 39, 0.8);
+  --input-bg: #1f2937;
+  --input-border: #374151;
+  --button-gradient-start: #7c3aed;
+  --button-gradient-mid: #a855f7;
+  --button-gradient-end: #ec4899;
+  --button-google-gradient-start: #6366f1;
+  --button-google-gradient-mid: #818cf8;
+  --button-google-gradient-end: #a5b4fc;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
