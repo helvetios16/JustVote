@@ -18,3 +18,35 @@
 body {
   font-family: 'Inter', sans-serif;
 }
+
+@theme {
+  /* Fondo principal: muy oscuro, base del layout */
+  --color-bg-main: #0f172a;
+  /* slate-900 */
+  /* Alternativa: */
+  --color-bg-main-alt: #111827;
+  /* gray-900 */
+
+  /* Texto principal: claro para alto contraste en fondo oscuro */
+  --color-text-main: #f1f5f9;
+  /* slate-100 */
+
+  /* Texto secundario: gris claro para descripciones o subtítulos */
+  --color-text-secondary: #94a3b8;
+  /* slate-400 */
+
+  /* Bordes y sombras sutiles: profundidad sin mucho contraste */
+  --color-border: #1e293b;
+  /* slate-800 */
+
+  /* Resaltados (botones, links importantes): vibrante y moderno */
+  --color-accent-start: #4f46e5;
+  /* indigo-600 */
+  --color-accent-end: #d946ef;
+  /* fuchsia-500 */
+
+  /* Fondo de tarjetas o paneles: oscuro pero elevándose del fondo base */
+  --color-card-bg: rgba(17, 24, 39, 0.8);
+  --color-card-bg-blue: #1e1b2e;
+  --color-card-bg-alt: #1f2937;
+}
