@@ -1,6 +1,6 @@
 <template>
   <body
-    class="bg-black text-white min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
+    class="bg-bg-main text-text-main min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
   >
     <div
       class="subtle-glow w-[400px] h-[400px] bg-purple-600 top-[-100px] left-[-100px] animate-pulse"
@@ -17,12 +17,12 @@
 
       <RouterLink
         to="/auth/sign-in"
-        class="gradient-bg text-white font-bold py-3 px-10 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 text-lg hover:opacity-90"
+        class="gradient-bg text-text-main font-bold py-3 px-10 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 text-lg hover:opacity-90"
       >
         ENTER
       </RouterLink>
     </main>
-    <footer class="absolute bottom-4 left-4 text-sm text-gray-200">JustVote</footer>
+    <footer class="absolute bottom-4 left-4 text-sm text-text-secondary">JustVote</footer>
   </body>
 </template>
 

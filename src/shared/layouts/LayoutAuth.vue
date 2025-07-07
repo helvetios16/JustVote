@@ -17,11 +17,6 @@ import HeaderAuth from '../components/HeaderAuth.vue';
 
 <style scoped>
 .gradient-bg {
-  background-image: linear-gradient(
-    to right,
-    var(--gradient-start),
-    var(--gradient-mid),
-    var(--gradient-end)
-  );
+  background: linear-gradient(to right, #0f172a, #1e1b4b);
 }
 </style>
