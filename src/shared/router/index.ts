@@ -11,12 +11,24 @@ export const router = createRouter({
     {
       path: '/auth',
       name: 'auth',
-      component: () => import('@/shared/layouts/LayoutAuth.vue'),
+      component: () => import('@/shared/layouts/auth/LayoutAuth.vue'),
       children: [
         {
           path: 'sign-in',
           name: 'sign-in',
           component: () => import('@/features/auth/pages/ViewSignIn.vue'),
+        },
+      ],
+    },
+    {
+      path: '/',
+      name: 'dashboard',
+      component: () => import('@/shared/layouts/dashboard/LayoutDashboard.vue'),
+      children: [
+        {
+          path: 'dashboard',
+          name: 'dashboard-home',
+          component: () => import('@/features/dashboard/pages/ViewDashboardHome.vue'),
         },
       ],
     },
