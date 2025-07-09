@@ -1,11 +1,14 @@
+<script setup lang="ts">
+import AppSidebar from './components/AppSidebar.vue';
+</script>
+
 <template>
-  <div class="gradient-bg min-h-screen flex flex-col items-center justify-center text-text-main">
-    <main class="flex flex-col items-center justify-center w-full mt-20">
-      <div class="w-full max-w-md items-center">
-        <transition name="fade" mode="out-in">
-          <RouterView />
-        </transition>
-      </div>
+  <div class="gradient-bg min-h-screen text-text-main">
+    <AppSidebar />
+    <main class="flex-1">
+      <transition name="fade" mode="out-in">
+        <RouterView />
+      </transition>
     </main>
   </div>
 </template>

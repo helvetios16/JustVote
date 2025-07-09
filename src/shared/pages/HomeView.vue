@@ -27,12 +27,14 @@
       </RouterLink>
     </main>
     <footer class="absolute bottom-4 left-4 text-sm text-text-secondary">
-      <span class="bg-gradient-to-r from-indigo-400 to-fuchsia-500 bg-clip-text text-transparent">
-        JustVote
-      </span>
+      <JustVote />
     </footer>
   </body>
 </template>
+
+<script setup lang="ts">
+import JustVote from '../components/JustVote.vue';
+</script>
 
 <style scoped>
 .gradient-bg {
