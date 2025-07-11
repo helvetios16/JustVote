@@ -21,14 +21,24 @@ export const router = createRouter({
       ],
     },
     {
-      path: '/',
+      path: '/dashboard',
       name: 'dashboard',
       component: () => import('@/shared/layouts/dashboard/LayoutDashboard.vue'),
       children: [
         {
-          path: 'dashboard',
+          path: '',
           name: 'dashboard-home',
           component: () => import('@/features/dashboard/pages/ViewDashboardHome.vue'),
+        },
+        {
+          path: 'create-vote',
+          name: 'dashboard-create-vote',
+          component: () => import('@/features/dashboard/pages/ViewDashboardCreate.vue'),
+        },
+        {
+          path: 'vote',
+          name: 'dashboard-vote',
+          component: () => import('@/features/dashboard/pages/ViewDashboardVote.vue'),
         },
       ],
     },

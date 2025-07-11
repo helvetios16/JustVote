@@ -5,7 +5,7 @@ import AppSidebar from './components/AppSidebar.vue';
 <template>
   <div class="gradient-bg min-h-screen text-text-main">
     <AppSidebar />
-    <main class="flex-1">
+    <main class="fixed flex flex-col left-[240px]">
       <transition name="fade" mode="out-in">
         <RouterView />
       </transition>
