@@ -80,6 +80,8 @@ const menuGroups = [
 const isActive = (path: string) => {
   return currentPath.value === path;
 };
+
+// exact-active-class="bg-accent-start text-white" Es la clave
 </script>
 
 <style scoped>
