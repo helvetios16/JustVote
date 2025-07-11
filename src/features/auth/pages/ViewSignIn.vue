@@ -10,29 +10,29 @@
     </button>
 
     <!-- GitHub -->
-    <button
-      class="mt-4 w-full button-gradient-logo text-text-main font-medium py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-gray-500"
-      type="button"
-    >
-      <img alt="GitHub logo" class="w-5 h-5 mr-3" :src="logoGithub" />
-      Sign in with GitHub
-    </button>
+    <!-- <button -->
+    <!--   class="mt-4 w-full button-gradient-logo text-text-main font-medium py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-gray-500" -->
+    <!--   type="button" -->
+    <!-- > -->
+    <!--   <img alt="GitHub logo" class="w-5 h-5 mr-3" :src="logoGithub" /> -->
+    <!--   Sign in with GitHub -->
+    <!-- </button> -->
 
     <!-- Microsoft -->
-    <button
-      class="mt-4 w-full button-gradient-logo text-text-main font-medium py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500"
-      type="button"
-    >
-      <img alt="Microsoft logo" class="w-5 h-5 mr-3" :src="logoMicrosoft" />
-      Sign in with Microsoft
-    </button>
+    <!-- <button -->
+    <!--   class="mt-4 w-full button-gradient-logo text-text-main font-medium py-3 px-4 rounded-lg hover:opacity-90 transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500" -->
+    <!--   type="button" -->
+    <!-- > -->
+    <!--   <img alt="Microsoft logo" class="w-5 h-5 mr-3" :src="logoMicrosoft" /> -->
+    <!--   Sign in with Microsoft -->
+    <!-- </button> -->
   </div>
 </template>
 
 <script setup lang="ts">
 import logoGoogle from '@/shared/assets/icon/logo_google.svg';
-import logoGithub from '@/shared/assets/icon/logo_github.svg';
-import logoMicrosoft from '@/shared/assets/icon/logo_microsoft.svg';
+// import logoGithub from '@/shared/assets/icon/logo_github.svg';
+// import logoMicrosoft from '@/shared/assets/icon/logo_microsoft.svg';
 </script>
 
 <style scoped>
