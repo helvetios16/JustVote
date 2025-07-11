@@ -17,11 +17,12 @@
                 <RouterLink
                   :to="menuGroups.path + item.path"
                   :class="{
-                    'bg-accent-start ': isActive(item.path),
-                    'hover:bg-border ': !isActive(item.path),
+                    'bg-accent-start text-white': isActive(menuGroups.path + item.path),
+                    'hover:bg-border text-text-main': !isActive(menuGroups.path + item.path),
                   }"
                   class="relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg transition-colors duration-200"
-                  @click="navigate(item.path)"
+                  aria-current="page"
+                  exact-active-class="bg-accent-start text-white"
                 >
                   {{ item.name }}
                 </RouterLink>
@@ -78,13 +79,6 @@ const menuGroups = [
 // Function to check if a path is active
 const isActive = (path: string) => {
   return currentPath.value === path;
-};
-
-// Function to simulate navigation (in a real app, this would use router.push)
-const navigate = (path: string) => {
-  currentPath.value = path;
-  // In a real application, you would use:
-  // router.push(path);
 };
 </script>
 
