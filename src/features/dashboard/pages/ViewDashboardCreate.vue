@@ -1,5 +1,5 @@
 <template>
-  <div class="ml-8 top-[48px] fixed z-10 w-[calc(100%-240px-2rem)]">
+  <div class="ml-8 top-[48px] pr-8 fixed z-10 w-[calc(100%-240px-2rem)]">
     <h1 class="text-3xl font-bold text-text-main mb-6">Crea Tu Nueva Elección 🎉</h1>
     <p class="text-lg text-text-secondary mb-8">
       Define los detalles clave de tu votación para que otros puedan participar.
@@ -7,6 +7,7 @@
 
     <div class="bg-card-bg p-8 rounded-lg shadow-xl backdrop-blur-sm border border-border">
       <form @submit.prevent="submitElection">
+        <!-- Título de la Elección -->
         <div class="mb-6">
           <label for="electionTitle" class="block text-text-main text-sm font-medium mb-2">
             Título de la Elección
@@ -21,6 +22,7 @@
           />
         </div>
 
+        <!-- Pregunta Principal -->
         <div class="mb-6">
           <label for="electionQuestion" class="block text-text-main text-sm font-medium mb-2">
             Pregunta Principal
@@ -35,6 +37,7 @@
           ></textarea>
         </div>
 
+        <!-- Opciones de Votación -->
         <div class="mb-6">
           <label class="block text-text-main text-sm font-medium mb-3">
             Opciones para la Votación
@@ -93,6 +96,7 @@
           </button>
         </div>
 
+        <!-- Botón de Creación -->
         <div class="mt-8">
           <button
             type="submit"
@@ -103,11 +107,55 @@
         </div>
       </form>
     </div>
+
+    <!-- Custom Success Modal -->
+    <div
+      v-if="showSuccessModal"
+      class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 animate-fade-in"
+    >
+      <div
+        class="bg-card-bg p-8 rounded-lg shadow-2xl border border-border max-w-md w-full text-center animate-zoom-in"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-16 w-16 text-green-500 mx-auto mb-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <h2 class="text-2xl font-bold text-text-main mb-3">¡Elección Creada con Éxito!</h2>
+        <p class="text-text-secondary mb-6">
+          Tu nueva elección "{{ createdElectionTitle }}" está lista para ser votada.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <RouterLink
+            :to="`/dashboard/vote/${createdElectionId}`"
+            @click="closeModal"
+            class="bg-accent-start hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 flex-grow"
+          >
+            Ver Elección
+          </RouterLink>
+          <button
+            @click="createNewElection"
+            class="bg-gray-700 hover:bg-gray-600 text-text-main font-bold py-2 px-4 rounded-lg transition-colors duration-200 flex-grow"
+          >
+            Crear Otra
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 
 const election = reactive({
   title: '',
@@ -115,26 +163,170 @@ const election = reactive({
   options: ['', ''], // Start with two default empty options
 });
 
+const isLoading = ref(false); // State for loading animation on button
+const showSuccessModal = ref(false); // State to control modal visibility
+const createdElectionId = ref(''); // To store the ID of the created election
+const createdElectionTitle = ref(''); // To store the title for the modal
+
 const addOption = () => {
   election.options.push('');
 };
 
 const removeOption = (index: number) => {
   if (election.options.length > 2) {
-    // Ensure at least two options remain
     election.options.splice(index, 1);
   }
 };
 
-const submitElection = () => {
-  // Here you would typically send `election` data to your backend
-  console.log('Election Data Submitted:', election);
-  alert('¡Elección creada exitosamente! (Simulado)');
-  // Optionally, redirect the user after submission
-  // For example, using Vue Router: router.push('/dashboard');
+const submitElection = async () => {
+  isLoading.value = true; // Show loading spinner
+
+  // Simulate API call
+  try {
+    // In a real application, you would send `election` data to your backend
+    // const response = await fetch('/api/elections', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(election),
+    // });
+    // const result = await response.json();
+
+    // Simulate a delay for the API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    // Simulate a successful creation with a dummy ID
+    const dummyId = 'elec-' + Math.random().toString(36).substring(2, 9);
+    createdElectionId.value = dummyId;
+    createdElectionTitle.value = election.title;
+
+    isLoading.value = false; // Hide loading spinner
+    showSuccessModal.value = true; // Show success modal
+  } catch (error) {
+    console.error('Error creating election:', error);
+    isLoading.value = false; // Hide loading spinner
+    // You might want to show an error message to the user here
+  }
+};
+
+const closeModal = () => {
+  showSuccessModal.value = false;
+};
+
+const createNewElection = () => {
+  // Reset the form for a new election
+  election.title = '';
+  election.question = '';
+  election.options = ['', ''];
+  closeModal(); // Close the modal
 };
 </script>
 
 <style scoped>
-/* Any specific styles not handled by Tailwind can go here */
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.6s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards 0.2s;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.7s ease-out forwards 0.4s;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-zoom-in {
+  animation: zoomIn 0.3s ease-out forwards;
+}
+
+/* Staggered fade-in for form sections */
+.animate-fade-in-delay-1 {
+  animation: fadeIn 0.5s ease-out forwards 0.7s;
+  opacity: 0; /* Start hidden */
+}
+.animate-fade-in-delay-2 {
+  animation: fadeIn 0.5s ease-out forwards 0.8s;
+  opacity: 0;
+}
+.animate-fade-in-delay-3 {
+  animation: fadeIn 0.5s ease-out forwards 0.9s;
+  opacity: 0;
+}
+.animate-fade-in-delay-4 {
+  animation: fadeIn 0.5s ease-out forwards 1s;
+  opacity: 0;
+}
+
+/* Loader spinner for button */
+.loader {
+  border-top-color: #3498db; /* Blue color for spinner */
+  -webkit-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 </style>

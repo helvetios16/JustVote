@@ -1,13 +1,13 @@
 <template>
   <aside
-    class="fixed flex flex-col top-0 left-0 h-screen z-99 text-text-main px-8 border-1 rounded-xl border-card-bg w-[240px] bg-bg-main"
+    class="fixed flex flex-col top-0 left-0 h-screen z-99 text-text-main px-8 border-card-bg w-[240px] bg-bg-main"
   >
     <div class="flex py-8 items-center">
       <h1 class="text-2xl font-bold"><JustVote /></h1>
     </div>
     <div class="flex flex-col overflow-y-auto no-scrollbar">
       <nav class="mb-6">
-        <div class="flex flex-col gap-4 text-[12px] capitalize">
+        <div class="flex flex-col gap-4 text-[14px] capitalize">
           <div v-for="(menuGroups, index) in menuGroups" :key="index">
             <h2 class="mb-4 flex leading-[20px] text-text-secondary">
               {{ menuGroups.title }}
