@@ -18,6 +18,11 @@ export const router = createRouter({
           name: 'sign-in',
           component: () => import('@/features/auth/pages/ViewSignIn.vue'),
         },
+        {
+          path: 'google-callback',
+          name: 'google-callback',
+          component: () => import('@/features/auth/pages/ViewGoogleCallback.vue'),
+        },
       ],
     },
     {
@@ -44,7 +49,7 @@ export const router = createRouter({
         {
           path: 'vote/:id',
           name: 'votes',
-          component: () => import('@/features/vote/pages/ViewVoting.vue'),
+          component: () => import('@/features/vote/pages/ViewVotingWithCamera.vue'),
           props: true,
         },
       ],
