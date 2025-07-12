@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { getToken } from '@/features/auth/services/authService';
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,7 +15,7 @@ export const router = createRouter({
       component: () => import('@/shared/layouts/auth/LayoutAuth.vue'),
       children: [
         {
-          path: 'sign-in',
+          path: 'signin',
           name: 'sign-in',
           component: () => import('@/features/auth/pages/ViewSignIn.vue'),
         },
@@ -29,6 +30,7 @@ export const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('@/shared/layouts/dashboard/LayoutDashboard.vue'),
+      meta: { requiresAuth: true },
       children: [
         {
           path: '',
@@ -55,4 +57,15 @@ export const router = createRouter({
       ],
     },
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = getToken();
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+
+  if (requiresAuth && !isAuthenticated) {
+    next({ name: 'signin' });
+  } else {
+    next();
+  }
 });

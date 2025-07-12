@@ -3,7 +3,7 @@
     class="fixed flex flex-col top-0 left-0 h-screen z-99 text-text-main px-8 border-card-bg w-[240px] bg-bg-main"
   >
     <div class="flex py-8 items-center">
-      <h1 class="text-2xl font-bold"><JustVote /></h1>
+      <RouterLink to="/" class="text-2xl font-bold"> <JustVote /> </RouterLink>
     </div>
     <div class="flex flex-col overflow-y-auto no-scrollbar">
       <nav class="mb-6">
@@ -32,17 +32,31 @@
         </div>
       </nav>
     </div>
+
+    <!-- User Profile Section -->
+    <div class="mt-auto flex items-center gap-4 p-4 border-t border-border">
+      <div class="user-avatar bg-accent-start text-text-main">
+        <img
+          v-if="userPicture"
+          :src="userPicture"
+          alt="User profile picture"
+          class="w-full h-full rounded-full object-cover"
+        />
+        <span v-else class="text-xl">{{ userInitial }}</span>
+      </div>
+      <span class="font-medium capitalize">{{ formattedUserName }}</span>
+    </div>
   </aside>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, computed, reactive } from 'vue';
 import JustVote from '@/shared/components/JustVote.vue';
 import { RouterLink } from 'vue-router';
 
 const currentPath = ref('/'); // Initialize with a default active path
 
-const menuGroups = [
+const menuGroups = reactive([
   {
     title: 'Dashboard',
     path: '/dashboard',
@@ -61,29 +75,48 @@ const menuGroups = [
       },
     ],
   },
-  // {
-  //   title: 'Account',
-  //   items: [
-  //     {
-  //       name: 'Profile',
-  //       path: '/profile',
-  //     },
-  //     {
-  //       name: 'Settings',
-  //       path: '/settings',
-  //     },
-  //   ],
-  // },
-];
+]);
+
+const userName = ref('');
+const userPicture = ref('');
+
+onMounted(() => {
+  const userData = sessionStorage.getItem('user');
+  if (userData) {
+    const user = JSON.parse(userData);
+    userName.value = user.name || 'Anonymous';
+    userPicture.value = user.picture || '';
+  }
+});
+
+const userInitial = computed(() => {
+  return userName.value ? userName.value.charAt(0).toUpperCase() : '';
+});
+
+const formattedUserName = computed(() => {
+  if (!userName.value) return '';
+  const lowerCaseUserName = userName.value.toLowerCase();
+  const nameParts = lowerCaseUserName.split(' ');
+  if (nameParts.length >= 3) {
+    return `${nameParts[0]} ${nameParts[2]}`;
+  }
+  return userName.value;
+});
 
 // Function to check if a path is active
 const isActive = (path: string) => {
   return currentPath.value === path;
 };
-
-// exact-active-class="bg-accent-start text-white" Es la clave
 </script>
 
 <style scoped>
-/* You can add custom styles here if needed, but Tailwind handles most of it. */
+.user-avatar {
+  width: 75px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
 </style>

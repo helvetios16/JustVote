@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+  <div class="flex items-center justify-center min-h-screen bg-transparent text-white">
     <div class="text-center">
       <h1 class="text-3xl font-bold mb-4">Processing Google Sign-In...</h1>
       <p>Please wait while we securely log you in.</p>
@@ -11,6 +11,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { saveUser } from '@/features/auth/services/authService';
+import type { UserAuthResponse } from '@/shared/interfaces/userauthresponse.interface';
 
 const router = useRouter();
 
@@ -36,19 +38,16 @@ onMounted(async () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        // Assuming your backend returns a JWT in a 'token' field
-        const jwt = data.token;
+        const userData: UserAuthResponse = await response.json();
 
-        if (jwt) {
-          // Store the JWT (e.g., in localStorage or a Pinia store)
-          localStorage.setItem('jwt_token', jwt);
+        if (userData && userData.token) {
+          saveUser(userData);
           // Clear the code verifier from session storage
           sessionStorage.removeItem('google_code_verifier');
           // Redirect to dashboard or home page
           router.push('/dashboard');
         } else {
-          console.error('JWT not found in backend response');
+          console.error('Token not found in backend response');
           // Handle error: redirect to sign-in with an error message
           router.push('/auth/sign-in?error=jwt_missing');
         }

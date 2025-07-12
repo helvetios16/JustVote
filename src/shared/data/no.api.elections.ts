@@ -1,4 +1,4 @@
-import type { Election } from '../interfaces/election';
+import type { Election } from '../interfaces/election.interface';
 import { ref } from 'vue';
 
 export const activeElections = ref<Election[]>([
