@@ -1,1 +1,2 @@
-export const BASE_API_URL = 'http://localhost:3000/api'; // Reemplaza con la URL de tu backend
+export const BASE_API_URL = 'http://localhost:8001/api'; // Reemplaza con la URL de tu backend
+

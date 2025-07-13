@@ -77,61 +77,61 @@
         </button>
 
         <!-- Modal de la cámara -->
-    <div
-      v-if="showCameraModal"
-      class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 animate-fade-in"
-    >
-      <div
-        class="bg-card-bg p-10 rounded-xl shadow-2xl border border-border max-w-md w-full text-center animate-zoom-in"
-      >
-        <h2 class="text-3xl font-bold text-text-main mb-4">Tomar Foto</h2>
-        <div v-if="!capturedImage">
-          <video ref="videoPlayer" autoplay class="w-full rounded-lg"></video>
-          <button
-            @click="captureImage"
-            class="mt-4 bg-accent-start hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md transform hover:scale-105"
+        <div
+          v-if="showCameraModal"
+          class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 animate-fade-in"
+        >
+          <div
+            class="bg-card-bg p-10 rounded-xl shadow-2xl border border-border max-w-md w-full text-center animate-zoom-in"
           >
-            Capturar Foto
-          </button>
-        </div>
-        <div v-else>
-          <img :src="capturedImage" alt="Captured Image" class="w-full rounded-lg" />
-          <div class="flex justify-center gap-4 mt-4">
+            <h2 class="text-3xl font-bold text-text-main mb-4">Tomar Foto</h2>
+            <div v-if="!capturedImage">
+              <video ref="videoPlayer" autoplay class="w-full rounded-lg"></video>
+              <button
+                @click="captureImage"
+                class="mt-4 bg-accent-start hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md transform hover:scale-105"
+              >
+                Capturar Foto
+              </button>
+            </div>
+            <div v-else>
+              <img :src="capturedImage" alt="Captured Image" class="w-full rounded-lg" />
+              <div class="flex justify-center gap-4 mt-4">
+                <button
+                  @click="retakePhoto"
+                  class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md transform hover:scale-105"
+                >
+                  Volver a Tomar
+                </button>
+                <button
+                  @click="confirmPhoto"
+                  class="bg-accent-start hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md transform hover:scale-105"
+                >
+                  Confirmar Foto
+                </button>
+              </div>
+            </div>
             <button
-              @click="retakePhoto"
-              class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md transform hover:scale-105"
+              @click="closeCameraModal"
+              class="absolute top-4 right-4 text-text-secondary hover:text-white"
             >
-              Volver a Tomar
-            </button>
-            <button
-              @click="confirmPhoto"
-              class="bg-accent-start hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md transform hover:scale-105"
-            >
-              Confirmar Foto
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             </button>
           </div>
         </div>
-        <button
-          @click="closeCameraModal"
-          class="absolute top-4 right-4 text-text-secondary hover:text-white"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
       </div>
     </div>
     <div v-else class="text-center text-text-secondary animate-fade-in mt-20">
@@ -307,7 +307,8 @@ const startCamera = async () => {
     console.error('Error accessing camera:', error);
     modalType.value = 'error';
     modalTitle.value = 'Error de Cámara';
-    modalMessage.value = 'No se pudo acceder a la cámara. Asegúrate de tener los permisos necesarios.';
+    modalMessage.value =
+      'No se pudo acceder a la cámara. Asegúrate de tener los permisos necesarios.';
     showModal.value = true;
     showCameraModal.value = false;
   }

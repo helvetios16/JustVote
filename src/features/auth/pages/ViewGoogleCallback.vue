@@ -12,7 +12,7 @@
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { saveUser } from '@/features/auth/services/authService';
-import type { UserAuthResponse } from '@/shared/interfaces/userauthresponse.interface';
+import type { UserAuthResponse } from '@/shared/interfaces/userAuthResponse.interface';
 
 const router = useRouter();
 
