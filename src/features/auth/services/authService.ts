@@ -1,6 +1,26 @@
 import type { UserAuthResponse } from '@/shared/interfaces/userauthresponse.interface';
+import { isAxiosError } from 'axios';
+import api from '@/shared/api/axios';
 
 const USER_KEY = 'user';
+
+export async function loginUser(credentials: {
+  email: string;
+  password: string;
+}): Promise<UserAuthResponse> {
+  try {
+    const response = await api.post('/auth/login', credentials);
+    const data: UserAuthResponse = response.data;
+    saveUser(data);
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || 'Failed to login');
+    } else {
+      throw new Error('An unexpected error occurred during login');
+    }
+  }
+}
 
 export function saveUser(user: UserAuthResponse): void {
   sessionStorage.setItem(USER_KEY, JSON.stringify(user));
