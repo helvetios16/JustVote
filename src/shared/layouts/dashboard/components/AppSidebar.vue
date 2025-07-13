@@ -34,17 +34,25 @@
     </div>
 
     <!-- User Profile Section -->
-    <div class="mt-auto flex items-center gap-4 p-4 border-t border-border">
-      <div class="user-avatar bg-accent-start text-text-main">
-        <img
-          v-if="userPicture"
-          :src="userPicture"
-          alt="User profile picture"
-          class="w-full h-full rounded-full object-cover"
-        />
-        <span v-else class="text-xl">{{ userInitial }}</span>
+    <div class="mt-auto flex flex-col gap-4 p-4 border-t border-border">
+      <div class="flex items-center gap-4">
+        <div class="user-avatar bg-accent-start text-text-main">
+          <img
+            v-if="userPicture"
+            :src="userPicture"
+            alt="User profile picture"
+            class="w-full h-full rounded-full object-cover"
+          />
+          <span v-else class="text-xl">{{ userInitial }}</span>
+        </div>
+        <span class="font-medium capitalize">{{ formattedUserName }}</span>
       </div>
-      <span class="font-medium capitalize">{{ formattedUserName }}</span>
+      <button
+        @click="logout"
+        class="w-full py-2 px-4 bg-fuchsia-600 text-white rounded-lg hover:bg-fuchsia-900 transition-colors duration-200"
+      >
+        Cerrar Sesión
+      </button>
     </div>
   </aside>
 </template>
@@ -52,8 +60,9 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, reactive } from 'vue';
 import JustVote from '@/shared/components/JustVote.vue';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 
+const router = useRouter();
 const currentPath = ref('/'); // Initialize with a default active path
 
 const menuGroups = reactive([
@@ -106,6 +115,11 @@ const formattedUserName = computed(() => {
 // Function to check if a path is active
 const isActive = (path: string) => {
   return currentPath.value === path;
+};
+
+const logout = () => {
+  sessionStorage.clear();
+  router.push('/auth/sign-in');
 };
 </script>
 

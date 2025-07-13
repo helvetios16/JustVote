@@ -15,7 +15,7 @@ export const router = createRouter({
       component: () => import('@/shared/layouts/auth/LayoutAuth.vue'),
       children: [
         {
-          path: 'signin',
+          path: 'sign-in',
           name: 'sign-in',
           component: () => import('@/features/auth/pages/ViewSignIn.vue'),
         },
@@ -64,7 +64,7 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
 
   if (requiresAuth && !isAuthenticated) {
-    next({ name: 'signin' });
+    next({ name: 'sign-in' });
   } else {
     next();
   }

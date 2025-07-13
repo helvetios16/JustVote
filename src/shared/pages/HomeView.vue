@@ -20,7 +20,7 @@
       </h4>
 
       <RouterLink
-        to="/auth/signin"
+        to="/auth/sign-in"
         class="gradient-bg text-text-main font-bold py-3 px-10 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 text-lg hover:opacity-90"
       >
         ENTER
