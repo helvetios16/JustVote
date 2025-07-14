@@ -1,4 +1,4 @@
-import type { UserAuthResponse } from '@/shared/interfaces/userauthresponse.interface';
+import type { UserAuthResponse } from '@/shared/interfaces/userAuthResponse.interface';
 import { isAxiosError } from 'axios';
 import api from '@/shared/api/axios';
 
@@ -9,7 +9,7 @@ export async function loginUser(credentials: {
   password: string;
 }): Promise<UserAuthResponse> {
   try {
-    const response = await api.post('/auth/login', credentials);
+    const response = await api.post('/auth/google', credentials);
     const data: UserAuthResponse = response.data;
     saveUser(data);
     return data;
