@@ -51,7 +51,7 @@ export const router = createRouter({
         {
           path: 'vote/:id',
           name: 'create-id',
-          component: () => import('@/features/vote/pages/ViewVotingWithCamera.vue'),
+          component: () => import('@/features/vote/pages/ViewVoting.vue'),
           props: true,
         },
         {
