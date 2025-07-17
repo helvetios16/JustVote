@@ -8,17 +8,18 @@
     <div class="flex flex-col overflow-y-auto no-scrollbar">
       <nav class="mb-6">
         <div class="flex flex-col gap-4 text-[14px] capitalize">
-          <div v-for="(menuGroups, index) in menuGroups" :key="index">
+          <div v-for="(menuGroup, gIndex) in menuGroups" :key="gIndex">
             <h2 class="mb-4 flex leading-[20px] text-text-secondary">
-              {{ menuGroups.title }}
+              {{ menuGroup.title }}
             </h2>
             <ul class="flex flex-col gap-4 text-text-main">
-              <li v-for="(item, itemIndex) in menuGroups.items" :key="itemIndex">
+              <li v-for="(item, iIndex) in menuGroup.items" :key="iIndex">
                 <RouterLink
-                  :to="menuGroups.path + item.path"
+                  v-if="item.path && !item.items"
+                  :to="item.path"
                   :class="{
-                    'bg-accent-start text-white': isActive(menuGroups.path + item.path),
-                    'hover:bg-border text-text-main': !isActive(menuGroups.path + item.path),
+                    'bg-accent-start text-white': isActive(item.path),
+                    'hover:bg-border text-text-main': !isActive(item.path),
                   }"
                   class="relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg transition-colors duration-200"
                   aria-current="page"
@@ -26,6 +27,25 @@
                 >
                   {{ item.name }}
                 </RouterLink>
+                <div v-if="item.items">
+                  <h3 class="px-3 mb-2 font-semibold text-text-secondary">{{ item.name }}</h3>
+                  <ul class="flex flex-col gap-2">
+                    <li v-for="(subItem, sIndex) in item.items" :key="sIndex">
+                      <RouterLink
+                        :to="subItem.path"
+                        :class="{
+                          'bg-accent-start text-white': isActive(subItem.path),
+                          'hover:bg-border text-text-main': !isActive(subItem.path),
+                        }"
+                        class="relative flex items-center w-full gap-3 pl-6 pr-3 py-2 font-medium rounded-lg transition-colors duration-200"
+                        aria-current="page"
+                        exact-active-class="bg-accent-start text-white"
+                      >
+                        {{ subItem.name }}
+                      </RouterLink>
+                    </li>
+                  </ul>
+                </div>
               </li>
             </ul>
           </div>
@@ -58,29 +78,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, reactive } from 'vue';
+import { ref, onMounted, computed, reactive, watch } from 'vue';
 import JustVote from '@/shared/components/JustVote.vue';
-import { RouterLink, useRouter } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
-const currentPath = ref('/'); // Initialize with a default active path
+const route = useRoute();
+const currentPath = ref(route.path);
+
+watch(
+  () => route.path,
+  (newPath) => {
+    currentPath.value = newPath;
+  },
+);
 
 const menuGroups = reactive([
   {
-    title: 'Dashboard',
-    path: '/dashboard',
+    title: 'Menu',
     items: [
       {
-        name: 'Principal',
-        path: '/',
+        name: 'Dashboard',
+        path: '/dashboard',
       },
       {
-        name: 'Crear',
-        path: '/create-vote',
+        name: 'Creaciones',
+        items: [
+          {
+            name: 'Crear Votación',
+            path: '/dashboard/create',
+          },
+          {
+            name: 'Mis Votaciones',
+            path: '/dashboard/creations',
+          },
+        ],
       },
       {
-        name: 'Votar',
-        path: '/vote',
+        name: 'Votaciones',
+        items: [
+          {
+            name: 'Eventos Actuales',
+            path: '/dashboard/vote',
+          },
+          {
+            name: 'Eventos Pasados',
+            path: '/dashboard/history',
+          },
+        ],
       },
     ],
   },
@@ -134,3 +179,4 @@ const logout = () => {
   font-weight: bold;
 }
 </style>
+

@@ -11,7 +11,7 @@
 
       <div class="flex gap-6 animate-zoom-in">
         <RouterLink
-          to="/dashboard/create-vote"
+          to="/dashboard/create"
           class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
         >
           <svg

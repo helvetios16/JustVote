@@ -38,9 +38,9 @@ export const router = createRouter({
           component: () => import('@/features/dashboard/pages/ViewDashboardHome.vue'),
         },
         {
-          path: 'create-vote',
+          path: 'create',
           name: 'dashboard-create-vote',
-          component: () => import('@/features/dashboard/pages/ViewDashboardCreate.vue'),
+          component: () => import('@/features/create/pages/ViewCreate.vue'),
         },
         {
           path: 'vote',
@@ -50,9 +50,19 @@ export const router = createRouter({
         },
         {
           path: 'vote/:id',
-          name: 'votes',
+          name: 'create-id',
           component: () => import('@/features/vote/pages/ViewVotingWithCamera.vue'),
           props: true,
+        },
+        {
+          path: 'creations',
+          name: 'dashboard-creations',
+          component: () => import('@/features/create/pages/ViewMyCreations.vue'),
+        },
+        {
+          path: 'history',
+          name: 'dashboard-history',
+          component: () => import('@/features/vote/pages/ViewVoteHistory.vue'),
         },
       ],
     },
