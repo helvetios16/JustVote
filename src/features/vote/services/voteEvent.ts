@@ -129,4 +129,3 @@ export async function createVoteByOptionId(optionId: number): Promise<VoteResult
     }
   }
 }
-

@@ -1,10 +1,235 @@
 <template>
-  <h1>h</h1>
+  <div class="pl-8 pt-[48px] pb-12 pr-8">
+    <div v-if="selectedEventDetails" class="animate-fade-in-down">
+      <div
+        class="relative bg-card-bg p-8 rounded-xl shadow-2xl backdrop-blur-md border border-border animate-slide-in-left overflow-hidden mb-8"
+      >
+        <h1 class="text-4xl font-extrabold text-text-main mb-3 leading-tight">
+          {{ selectedEventDetails.title }}
+        </h1>
+        <p class="text-xl text-text-secondary mb-1">{{ selectedEventDetails.description }}</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Columna de Detalles del Evento y Opciones -->
+        <div
+          class="relative bg-card-bg p-8 rounded-xl shadow-2xl backdrop-blur-md border border-border animate-slide-in-left overflow-hidden"
+        >
+          <h2 class="text-2xl font-bold text-text-main mb-8">Detalles del Evento</h2>
+          <div class="space-y-2 mb-6">
+            <p class="text-text-secondary">
+              <span class="font-semibold text-text-main">ID del Evento:</span>
+              {{ selectedEventDetails.id }}
+            </p>
+            <p class="text-text-secondary">
+              <span class="font-semibold text-text-main">Estado:</span>
+              {{ selectedEventDetails.status }}
+            </p>
+            <p class="text-text-secondary">
+              <span class="font-semibold text-text-main">Inicio:</span>
+              {{ new Date(selectedEventDetails.startTime).toLocaleString() }}
+            </p>
+            <p class="text-text-secondary">
+              <span class="font-semibold text-text-main">Fin:</span>
+              {{ new Date(selectedEventDetails.endTime).toLocaleString() }}
+            </p>
+          </div>
+
+          <h3 class="text-xl font-bold text-text-main mb-4">Opciones:</h3>
+          <ul class="list-disc list-inside text-text-secondary mb-6">
+            <li v-for="option in selectedEventOptions" :key="option.id" class="mb-1">
+              {{ option.label }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Columna de Acciones del Evento -->
+        <div
+          class="relative bg-card-bg p-8 rounded-xl shadow-2xl backdrop-blur-md border border-border animate-slide-in-left overflow-hidden flex flex-col justify-between"
+        >
+          <h2 class="text-2xl font-bold text-text-main mb-8">Acciones del Evento</h2>
+          <div class="space-y-4">
+            <button
+              @click="handleOpenEvent"
+              :disabled="selectedEventDetails?.status === 'OPENED'"
+              class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Abrir Votación
+            </button>
+            <button
+              @click="handleCloseEvent"
+              :disabled="selectedEventDetails?.status === 'CLOSED'"
+              class="w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cerrar Votación
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification -->
+      <div
+        v-if="showNotification"
+        class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transition-opacity duration-300"
+        :class="{ 'opacity-100': showNotification, 'opacity-0': !showNotification }"
+      >
+        {{ notificationMessage }}
+      </div>
+
+      <!-- Sección de Participantes (ancho completo) -->
+      <div
+        class="relative bg-card-bg p-8 rounded-xl shadow-2xl backdrop-blur-md border border-border animate-slide-in-left overflow-hidden"
+      >
+        <h2 class="text-2xl font-bold text-text-main mb-8">Participantes</h2>
+        <div v-if="participants.length > 0" class="overflow-x-auto">
+          <table class="min-w-full bg-bg-main-alt rounded-lg overflow-hidden">
+            <thead class="bg-border">
+              <tr>
+                <th class="py-3 px-4 text-left text-sm font-semibold text-text-main">Nombre</th>
+                <th class="py-3 px-4 text-left text-sm font-semibold text-text-main">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="participant in participants"
+                :key="participant.id"
+                class="border-b border-border last:border-b-0"
+              >
+                <td class="py-3 px-4 text-text-secondary">{{ participant.name }}</td>
+                <td class="py-3 px-4 text-text-secondary">{{ participant.status }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p v-else class="text-text-secondary">No hay participantes aún.</p>
+      </div>
+    </div>
+    <div v-else class="text-center text-text-secondary animate-fade-in mt-20">
+      <p class="text-2xl font-semibold mb-4">¡Oops! Evento no encontrado.</p>
+      <p class="text-lg mb-8">Parece que el enlace es incorrecto o el evento no existe.</p>
+      <RouterLink
+        to="/dashboard/my-creations"
+        class="inline-block bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 shadow-md"
+      >
+        Volver a Mis Creaciones
+      </RouterLink>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { getParticipantsByVotingEventId } from '../services/participantController';
+import { ref, watchEffect } from 'vue';
+import { RouterLink } from 'vue-router';
+import { openVotingEvent, closeVotingEvent } from '@/features/create/services/createEvent';
+import { getVotingEventById } from '@/features/vote/services/voteEvent';
+import { getOptionsByVotingEventId } from '@/features/vote/services/voteEvent';
+import { getParticipantsByVotingEventId } from '@/features/create/services/participantController';
+import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
+import type { Option } from '@/shared/interfaces/option.interface';
+import type { ParticipantResult } from '@/shared/interfaces/participantResult.interface';
 
 const props = defineProps<{ id: string }>();
-console.log(getParticipantsByVotingEventId(props.id));
+
+const selectedEventDetails = ref<VotingEvent | null>(null);
+const selectedEventOptions = ref<Option[]>([]);
+const participants = ref<ParticipantResult[]>([]);
+const showNotification = ref(false);
+const notificationMessage = ref('');
+
+const handleOpenEvent = async () => {
+  if (!props.id) return;
+  try {
+    await openVotingEvent(props.id);
+    notificationMessage.value = 'Votación abierta con éxito!';
+    showNotification.value = true;
+    // Refresh event details to show updated status
+    selectedEventDetails.value = await getVotingEventById(props.id);
+  } catch (error) {
+    console.error('Error al abrir la votación:', error);
+    notificationMessage.value = 'Error al abrir la votación.';
+    showNotification.value = true;
+  } finally {
+    setTimeout(() => {
+      showNotification.value = false;
+    }, 3000);
+  }
+};
+
+const handleCloseEvent = async () => {
+  if (!props.id) return;
+  try {
+    await closeVotingEvent(props.id);
+    notificationMessage.value = 'Votación cerrada con éxito!';
+    showNotification.value = true;
+    // Refresh event details to show updated status
+    selectedEventDetails.value = await getVotingEventById(props.id);
+  } catch (error) {
+    console.error('Error al cerrar la votación:', error);
+    notificationMessage.value = 'Error al cerrar la votación.';
+    showNotification.value = true;
+  } finally {
+    setTimeout(() => {
+      showNotification.value = false;
+    }, 3000);
+  }
+};
+
+watchEffect(async () => {
+  if (props.id) {
+    try {
+      selectedEventDetails.value = await getVotingEventById(props.id);
+      selectedEventOptions.value = await getOptionsByVotingEventId(props.id);
+      participants.value = await getParticipantsByVotingEventId(props.id);
+    } catch (error) {
+      console.error('Error fetching event details:', error);
+      selectedEventDetails.value = null;
+      selectedEventOptions.value = [];
+    }
+  }
+});
 </script>
+
+<style scoped>
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.6s ease-out forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.7s ease-out forwards 0.2s;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+</style>
