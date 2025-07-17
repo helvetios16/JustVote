@@ -45,7 +45,7 @@ export const router = createRouter({
         {
           path: 'vote',
           name: 'dashboard-vote',
-          component: () => import('@/features/dashboard/pages/ViewDashboardVote.vue'),
+          component: () => import('@/features/vote/pages/ViewVotes.vue'),
           children: [],
         },
         {

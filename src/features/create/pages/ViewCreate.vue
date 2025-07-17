@@ -24,12 +24,12 @@
 
         <!-- Pregunta Principal -->
         <div class="mb-6">
-          <label for="electionQuestion" class="block text-text-main text-sm font-medium mb-2">
-            Pregunta Principal
+          <label for="electionDescription" class="block text-text-main text-sm font-medium mb-2">
+            Descripción
           </label>
           <textarea
-            id="electionQuestion"
-            v-model="election.question"
+            id="electionDescription"
+            v-model="election.description"
             rows="3"
             placeholder="Ej: ¿Cuál de las siguientes opciones representa mejor nuestra visión?"
             class="w-full p-3 rounded-md bg-bg-main-alt text-text-main border border-border focus:outline-none focus:ring-2 focus:ring-accent-start"
@@ -156,10 +156,12 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
+import { createVotingEvent } from '../services/createEvent';
+import { createOption } from '../services/optionController';
 
 const election = reactive({
   title: '',
-  question: '',
+  description: '',
   options: ['', ''], // Start with two default empty options
 });
 
@@ -179,32 +181,36 @@ const removeOption = (index: number) => {
 };
 
 const submitElection = async () => {
-  isLoading.value = true; // Show loading spinner
+  isLoading.value = true;
 
-  // Simulate API call
   try {
-    // In a real application, you would send `election` data to your backend
-    // const response = await fetch('/api/elections', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(election),
-    // });
-    // const result = await response.json();
+    const eventPayload = {
+      title: election.title,
+      description: election.description,
+      startTime: new Date(Date.now() - 5 * 60 * 60 * 1000 + 5 * 60 * 1000).toISOString(),
+      endTime: new Date(Date.now() + 19 * 60 * 60 * 1000 + 5 * 60 * 1000).toISOString(),
+    };
 
-    // Simulate a delay for the API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const createdEvent = await createVotingEvent(eventPayload);
+    console.log(createdEvent);
+    createdElectionId.value = createdEvent.id;
+    createdElectionTitle.value = createdEvent.title;
 
-    // Simulate a successful creation with a dummy ID
-    const dummyId = 'elec-' + Math.random().toString(36).substring(2, 9);
-    createdElectionId.value = dummyId;
-    createdElectionTitle.value = election.title;
+    for (const optionLabel of election.options) {
+      if (optionLabel) {
+        const optionPayload = {
+          eventId: createdEvent.id,
+          label: optionLabel,
+        };
+        await createOption(optionPayload);
+      }
+    }
 
-    isLoading.value = false; // Hide loading spinner
-    showSuccessModal.value = true; // Show success modal
+    isLoading.value = false;
+    showSuccessModal.value = true;
   } catch (error) {
     console.error('Error creating election:', error);
-    isLoading.value = false; // Hide loading spinner
-    // You might want to show an error message to the user here
+    isLoading.value = false;
   }
 };
 
@@ -215,7 +221,7 @@ const closeModal = () => {
 const createNewElection = () => {
   // Reset the form for a new election
   election.title = '';
-  election.question = '';
+  election.description = '';
   election.options = ['', ''];
   closeModal(); // Close the modal
 };

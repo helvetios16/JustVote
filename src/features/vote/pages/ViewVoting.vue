@@ -2,7 +2,7 @@
   <div class="ml-8 top-[48px] fixed z-10 w-[calc(100%-240px-2rem)] overflow-y-auto pb-12 pr-8">
     <div v-if="voting" class="animate-fade-in-down">
       <h1 class="text-4xl font-extrabold text-text-main mb-3 leading-tight">{{ voting.title }}</h1>
-      <p class="text-xl text-text-secondary mb-10">{{ voting.question }}</p>
+      <p class="text-xl text-text-secondary mb-10">{{ voting.description }}</p>
 
       <div
         class="relative bg-card-bg p-8 rounded-xl shadow-2xl backdrop-blur-md border border-border animate-slide-in-left overflow-hidden"
@@ -16,33 +16,33 @@
 
         <div class="flex flex-col gap-5 mb-10">
           <label
-            v-for="(option, index) in voting.options"
+            v-for="(option, index) in options"
             :key="index"
             class="flex items-center p-5 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-[1.02] relative group"
             :class="{
               'bg-indigo-600 text-white shadow-lg ring-2 ring-indigo-400':
-                selectedOption === option,
+                selectedOption === option.label,
               'bg-bg-main-alt hover:bg-border text-text-main border border-transparent group-hover:border-indigo-500':
-                selectedOption !== option,
+                selectedOption !== option.label,
             }"
           >
             <input
               type="radio"
               :id="`option-${index}`"
-              :value="option"
+              :value="option.label"
               v-model="selectedOption"
               class="hidden"
             />
             <div
               class="w-7 h-7 rounded-full border-3 flex items-center justify-center mr-4 transition-colors duration-300 flex-shrink-0"
               :class="{
-                'border-white bg-white': selectedOption === option,
+                'border-white bg-white': selectedOption === option.label,
                 'border-text-secondary bg-transparent group-hover:border-indigo-500':
-                  selectedOption !== option,
+                  selectedOption !== option.label,
               }"
             >
               <svg
-                v-if="selectedOption === option"
+                v-if="selectedOption === option.label"
                 class="w-5 h-5 text-indigo-600 animate-pop-in"
                 fill="currentColor"
                 viewBox="0 0 20 20"
@@ -54,11 +54,11 @@
                 ></path>
               </svg>
             </div>
-            <span class="text-xl font-semibold">{{ option }}</span>
+            <span class="text-xl font-semibold">{{ option.label }}</span>
             <!-- Borde de brillo en hover/seleccionado -->
             <div
               class="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-indigo-500 transition-colors duration-300"
-              :class="{ '!border-white': selectedOption === option }"
+              :class="{ '!border-white': selectedOption === option.label }"
             ></div>
           </label>
         </div>
@@ -143,22 +143,21 @@
 
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import { useRoute, useRouter, RouterLink } from 'vue-router';
-import { activeElections } from '@/shared/data/no.api.elections';
+import { useRouter, RouterLink } from 'vue-router';
+import {
+  getVotingEventById,
+  getOptionsByVotingEventId,
+  createVoteByOptionId,
+} from '@/features/vote/services/voteEvent';
+import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
+import type { Option } from '@/shared/interfaces/option.interface';
 
-export interface Election {
-  id: string;
-  title: string;
-  question: string;
-  options: string[];
-}
-
-const route = useRoute();
 const router = useRouter();
 
 const props = defineProps<{ id: string }>();
 
-const voting = ref<Election | undefined>(undefined);
+const voting = ref<VotingEvent | undefined>(undefined);
+const options = ref<Option[]>([]);
 const selectedOption = ref<string | null>(null);
 const isLoading = ref(false);
 const showModal = ref(false);
@@ -166,11 +165,16 @@ const modalTitle = ref('');
 const modalMessage = ref('');
 const modalType = ref<'success' | 'error'>('success');
 
-watchEffect(() => {
+watchEffect(async () => {
   if (props.id) {
-    const foundElection = activeElections.value.find((election) => election.id === props.id);
-    voting.value = foundElection;
-    selectedOption.value = null;
+    try {
+      voting.value = await getVotingEventById(props.id);
+      options.value = await getOptionsByVotingEventId(props.id);
+      selectedOption.value = null;
+    } catch (error) {
+      console.error('Error fetching voting event or options:', error);
+      voting.value = undefined; // Indicate that the event was not found or an error occurred
+    }
   } else {
     voting.value = undefined;
   }
@@ -188,18 +192,16 @@ const submitVote = async () => {
   isLoading.value = true;
 
   try {
-    // Simulación de llamada a la API
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    const isSuccess = Math.random() > 0.1;
-
-    if (isSuccess) {
-      modalType.value = 'success';
-      modalTitle.value = '¡Voto Registrado!';
-      modalMessage.value = `Tu voto por "${selectedOption.value}" ha sido registrado con éxito en la elección "${voting.value.title}".`;
-    } else {
-      throw new Error('Hubo un problema al procesar tu voto. Inténtalo de nuevo.');
+    const selectedOptionObject = options.value.find((opt) => opt.label === selectedOption.value);
+    if (!selectedOptionObject) {
+      throw new Error('Opción seleccionada no encontrada.');
     }
+
+    await createVoteByOptionId(selectedOptionObject.id);
+
+    modalType.value = 'success';
+    modalTitle.value = '¡Voto Registrado!';
+    modalMessage.value = `Tu voto por "${selectedOption.value}" ha sido registrado con éxito en la elección "${voting.value.title}".`;
 
     showModal.value = true;
   } catch (error: any) {
@@ -214,8 +216,6 @@ const submitVote = async () => {
 
 const closeModal = () => {
   showModal.value = false;
-  // Opcional: Si es un éxito, podrías redirigir al usuario a una página de resultados
-  // o a la lista de votaciones después de cerrar el modal.
   if (modalType.value === 'success') {
     router.push('/dashboard/vote');
   }
