@@ -43,6 +43,10 @@ export function getToken(): string | null {
   return getUser()?.token ?? null;
 }
 
+export function getUserId(): string | null {
+  return getUser()?.userId ?? null;
+}
+
 export function clearUser(): void {
   sessionStorage.removeItem(USER_KEY);
 }
