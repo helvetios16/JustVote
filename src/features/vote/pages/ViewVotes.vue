@@ -139,7 +139,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
-import { getVotingEvents } from '@/features/create/services/createEvent';
+import { getVotingEvents } from '@/features/create/services/eventController';
 import { createParticipantForVotingEvent } from '@/features/vote/services/participantController';
 import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
 
@@ -177,7 +177,9 @@ const handleConfirmAddEvent = async () => {
   } catch (error: any) {
     confirmationType.value = 'error';
     confirmationTitle.value = 'Error al Agregar Evento';
-    confirmationMessage.value = error.response?.data?.message || `No se pudo agregar el evento con código "${eventCode.value}". Por favor, verifica el código.`;
+    confirmationMessage.value =
+      error.response?.data?.message ||
+      `No se pudo agregar el evento con código "${eventCode.value}". Por favor, verifica el código.`;
   } finally {
     showAddEventModal.value = false;
     showConfirmationModal.value = true;
@@ -200,24 +202,57 @@ const closeConfirmationModal = () => {
 
 /* Animations for modals */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes zoomIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes bounceIn {
-  0%, 20%, 40%, 60%, 80%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  20%,
+  40%,
+  60%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
 }
 
 .animate-fade-in {

@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
-import { getVotingEvents } from '@/features/create/services/createEvent';
+import { getVotingEvents } from '@/features/create/services/eventController';
 import { getUser } from '@/features/auth/services/authService';
 import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
 

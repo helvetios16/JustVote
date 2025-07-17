@@ -156,7 +156,7 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { createVotingEvent } from '../services/createEvent';
+import { createVotingEvent } from '../services/eventController';
 import { createOption } from '../services/optionController';
 
 const election = reactive({

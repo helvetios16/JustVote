@@ -63,6 +63,16 @@
             >
               Cerrar Votación
             </button>
+            <button
+              @click="
+                () => {
+                  /* Implement PDF generation logic here */
+                }
+              "
+              class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
+            >
+              Generar PDF
+            </button>
           </div>
         </div>
       </div>
@@ -120,7 +130,7 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
 import { RouterLink } from 'vue-router';
-import { openVotingEvent, closeVotingEvent } from '@/features/create/services/createEvent';
+import { openVotingEvent, closeVotingEvent } from '@/features/create/services/eventController';
 import { getVotingEventById } from '@/features/vote/services/voteEvent';
 import { getOptionsByVotingEventId } from '@/features/vote/services/voteEvent';
 import { getParticipantsByVotingEventId } from '@/features/create/services/participantController';
