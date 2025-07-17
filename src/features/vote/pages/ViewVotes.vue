@@ -140,6 +140,7 @@
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { getVotingEvents } from '@/features/create/services/createEvent';
+import { createParticipantForVotingEvent } from '@/features/vote/services/participantController';
 import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
 
 const elections = ref<VotingEvent[]>([]);
@@ -168,18 +169,19 @@ const closeAddEventModal = () => {
 };
 
 const handleConfirmAddEvent = async () => {
-  // Simulate API call or validation
-  if (eventCode.value.trim() === 'success') {
+  try {
+    await createParticipantForVotingEvent(eventCode.value.trim());
     confirmationType.value = 'success';
     confirmationTitle.value = 'Evento Agregado!';
-    confirmationMessage.value = `El evento con código "${eventCode.value}" ha sido agregado con éxito.`;
-  } else {
+    confirmationMessage.value = `Te has unido al evento con código "${eventCode.value}" con éxito.`;
+  } catch (error: any) {
     confirmationType.value = 'error';
     confirmationTitle.value = 'Error al Agregar Evento';
-    confirmationMessage.value = `No se pudo agregar el evento con código "${eventCode.value}". Por favor, verifica el código.`;
+    confirmationMessage.value = error.response?.data?.message || `No se pudo agregar el evento con código "${eventCode.value}". Por favor, verifica el código.`;
+  } finally {
+    showAddEventModal.value = false;
+    showConfirmationModal.value = true;
   }
-  showAddEventModal.value = false;
-  showConfirmationModal.value = true;
 };
 
 const closeConfirmationModal = () => {

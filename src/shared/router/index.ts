@@ -43,6 +43,12 @@ export const router = createRouter({
           component: () => import('@/features/create/pages/ViewCreate.vue'),
         },
         {
+          path: 'create/:id',
+          name: 'dashboard-create-singular',
+          component: () => import('@/features/create/pages/ViewCreation.vue'),
+          props: true,
+        },
+        {
           path: 'vote',
           name: 'dashboard-vote',
           component: () => import('@/features/vote/pages/ViewVotes.vue'),
