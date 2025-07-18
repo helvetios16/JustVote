@@ -73,17 +73,14 @@
             >
               Generar PDF
             </button>
+            <button
+              @click="handleDeleteEvent"
+              class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
+            >
+              Eliminar Evento
+            </button>
           </div>
         </div>
-      </div>
-
-      <!-- Notification -->
-      <div
-        v-if="showNotification"
-        class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transition-opacity duration-300"
-        :class="{ 'opacity-100': showNotification, 'opacity-0': !showNotification }"
-      >
-        {{ notificationMessage }}
       </div>
 
       <!-- Sección de Participantes (ancho completo) -->
@@ -118,11 +115,20 @@
       <p class="text-2xl font-semibold mb-4">¡Oops! Evento no encontrado.</p>
       <p class="text-lg mb-8">Parece que el enlace es incorrecto o el evento no existe.</p>
       <RouterLink
-        to="/dashboard/my-creations"
+        to="/dashboard/creations"
         class="inline-block bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 shadow-md"
       >
         Volver a Mis Creaciones
       </RouterLink>
+    </div>
+
+    <!-- Notification -->
+    <div
+      v-if="showNotification"
+      class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transition-opacity duration-300 z-20"
+      :class="{ 'opacity-100': showNotification, 'opacity-0': !showNotification }"
+    >
+      {{ notificationMessage }}
     </div>
   </div>
 </template>
@@ -130,7 +136,11 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
 import { RouterLink } from 'vue-router';
-import { openVotingEvent, closeVotingEvent } from '@/features/create/services/eventController';
+import {
+  openVotingEvent,
+  closeVotingEvent,
+  deleteVotingEvent,
+} from '@/features/create/services/eventController';
 import { getVotingEventById } from '@/features/vote/services/voteEvent';
 import { getOptionsByVotingEventId } from '@/features/vote/services/voteEvent';
 import { getParticipantsByVotingEventId } from '@/features/create/services/participantController';
@@ -174,13 +184,38 @@ const handleCloseEvent = async () => {
     // Refresh event details to show updated status
     selectedEventDetails.value = await getVotingEventById(props.id);
   } catch (error) {
-    console.error('Error al cerrar la votación:', error);
-    notificationMessage.value = 'Error al cerrar la votación.';
+    console.error('Error al abrir la votacion:', error);
+    notificationMessage.value = 'Error al abrir la votacion';
     showNotification.value = true;
   } finally {
     setTimeout(() => {
       showNotification.value = false;
     }, 3000);
+  }
+};
+
+const handleDeleteEvent = async () => {
+  if (!props.id) return;
+  if (
+    confirm('¿Estás seguro de que quieres eliminar este evento? Esta acción no se puede deshacer.')
+  ) {
+    try {
+      await deleteVotingEvent(props.id);
+      notificationMessage.value = 'Evento eliminado con éxito!';
+      showNotification.value = true;
+      setTimeout(() => {
+        showNotification.value = false;
+        // Redirect to my creations page after successful deletion
+        window.location.href = '/dashboard/creations';
+      }, 3000);
+    } catch (error) {
+      console.error('Error al eliminar el evento:', error);
+      notificationMessage.value = 'Error al eliminar el evento.';
+      showNotification.value = true;
+      setTimeout(() => {
+        showNotification.value = false;
+      }, 3000);
+    }
   }
 };
 

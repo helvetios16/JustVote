@@ -41,7 +41,7 @@
       <p class="text-xl mb-4">¡Aún no has creado ninguna votación!</p>
       <p class="mb-6">¿Por qué no creas una ahora?</p>
       <RouterLink
-        to="/create-votes"
+        to="/dashboard/create"
         class="inline-block bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200"
       >
         Crear Nueva Elección

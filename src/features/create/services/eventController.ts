@@ -140,7 +140,7 @@ export async function openVotingEvent(id: string): Promise<VotingEvent> {
       throw new Error('No authentication token found.');
     }
 
-    const response = await api.patch<VotingEvent>(`/voting-event/open/${id}`, null, {
+    const response = await api.patch<VotingEvent>(`/voting-event/open/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -170,7 +170,7 @@ export async function closeVotingEvent(id: string): Promise<VotingEvent> {
       throw new Error('No authentication token found.');
     }
 
-    const response = await api.patch<VotingEvent>(`/voting-event/close/${id}`, null, {
+    const response = await api.patch<VotingEvent>(`/voting-event/close/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
