@@ -45,14 +45,14 @@
 
         <!-- Columna de Acciones del Evento -->
         <div
-          class="relative bg-card-bg p-8 rounded-xl shadow-2xl backdrop-blur-md border border-border animate-slide-in-left overflow-hidden flex flex-col justify-between"
+          class="relative bg-card-bg p-8 rounded-xl shadow-2xl backdrop-blur-md border border-border animate-slide-in-left overflow-hidden flex flex-col"
         >
           <h2 class="text-2xl font-bold text-text-main mb-8">Acciones del Evento</h2>
-          <div class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <button
               @click="handleOpenEvent"
               :disabled="selectedEventDetails?.status === 'OPENED'"
-              class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Abrir Votación
             </button>
@@ -69,15 +69,30 @@
                   /* Implement PDF generation logic here */
                 }
               "
-              class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
+              class="w-full bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
             >
               Generar PDF
             </button>
             <button
               @click="handleDeleteEvent"
-              class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
+              class="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
             >
               Eliminar Evento
+            </button>
+          </div>
+
+          <h3 class="text-xl font-bold text-text-main mb-4">Opciones de Edición</h3>
+          <div class="space-y-4">
+            <button
+              @click="isEditModalVisible = true"
+              class="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
+            >
+              Cambiar Título/Descripción
+            </button>
+            <button
+              class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
+            >
+              Cambiar/Agregar Opciones
             </button>
           </div>
         </div>
@@ -130,6 +145,14 @@
     >
       {{ notificationMessage }}
     </div>
+
+    <EditEventDetailsModal
+      :is-visible="isEditModalVisible"
+      :current-title="selectedEventDetails?.title || ''"
+      :current-description="selectedEventDetails?.description || ''"
+      @close="isEditModalVisible = false"
+      @save="handleUpdateEventDetails"
+    />
   </div>
 </template>
 
@@ -140,6 +163,7 @@ import {
   openVotingEvent,
   closeVotingEvent,
   deleteVotingEvent,
+  updateVotingEvent,
 } from '@/features/create/services/eventController';
 import { getVotingEventById } from '@/features/vote/services/voteEvent';
 import { getOptionsByVotingEventId } from '@/features/vote/services/voteEvent';
@@ -147,6 +171,8 @@ import { getParticipantsByVotingEventId } from '@/features/create/services/parti
 import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
 import type { Option } from '@/shared/interfaces/option.interface';
 import type { ParticipantResult } from '@/shared/interfaces/participantResult.interface';
+import EditEventDetailsModal from '@/features/create/components/EditEventDetailsModal.vue';
+import EditOptionsModal from '@/features/create/components/EditOptionsModal.vue';
 
 const props = defineProps<{ id: string }>();
 
@@ -155,6 +181,7 @@ const selectedEventOptions = ref<Option[]>([]);
 const participants = ref<ParticipantResult[]>([]);
 const showNotification = ref(false);
 const notificationMessage = ref('');
+const isEditModalVisible = ref(false);
 
 const handleOpenEvent = async () => {
   if (!props.id) return;
@@ -216,6 +243,26 @@ const handleDeleteEvent = async () => {
         showNotification.value = false;
       }, 3000);
     }
+  }
+};
+
+const handleUpdateEventDetails = async (newTitle: string, newDescription: string) => {
+  if (!props.id) return;
+  try {
+    await updateVotingEvent(props.id, { title: newTitle, description: newDescription });
+    notificationMessage.value = 'Detalles del evento actualizados con éxito!';
+    showNotification.value = true;
+    isEditModalVisible.value = false;
+    // Refresh event details to show updated status
+    selectedEventDetails.value = await getVotingEventById(props.id);
+  } catch (error) {
+    console.error('Error al actualizar los detalles del evento:', error);
+    notificationMessage.value = 'Error al actualizar los detalles del evento.';
+    showNotification.value = true;
+  } finally {
+    setTimeout(() => {
+      showNotification.value = false;
+    }, 3000);
   }
 };
 
