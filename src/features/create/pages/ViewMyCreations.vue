@@ -63,7 +63,6 @@
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { getVotingEvents } from '@/features/create/services/eventController';
-import { getUser } from '@/features/auth/services/authService';
 import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
 
 const myCreations = ref<VotingEvent[]>([]);
@@ -90,15 +89,7 @@ const copyEventId = async (id: string) => {
 
 onMounted(async () => {
   try {
-    const allEvents = await getVotingEvents();
-    const currentUser = getUser();
-
-    if (currentUser && currentUser.userId) {
-      myCreations.value = allEvents.filter((event) => event.userId === currentUser.userId);
-    } else {
-      console.warn('User not logged in or user ID not found.');
-      myCreations.value = [];
-    }
+    myCreations.value = await getVotingEvents();
   } catch (error) {
     console.error("Error fetching user's voting events:", error);
   }
