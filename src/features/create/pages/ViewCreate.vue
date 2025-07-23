@@ -1,5 +1,5 @@
 <template>
-  <div class="ml-8 top-[48px] pr-8 fixed z-10 w-[calc(100%-240px-2rem)]">
+  <div class="mt-[48px] pr-8 w-full mx-8">
     <h1 class="text-3xl font-bold text-text-main mb-6">Crea Tu Nueva Elección 🎉</h1>
     <p class="text-lg text-text-secondary mb-8">
       Define los detalles clave de tu votación para que otros puedan participar.
@@ -35,6 +35,60 @@
             class="w-full p-3 rounded-md bg-bg-main-alt text-text-main border border-border focus:outline-none focus:ring-2 focus:ring-accent-start"
             required
           ></textarea>
+        </div>
+
+        <!-- Start and End Time -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label for="startDate" class="block text-text-main text-sm font-medium mb-2">
+              Fecha de Inicio
+            </label>
+            <input
+              type="date"
+              id="startDate"
+              v-model="election.startDate"
+              class="w-full p-3 rounded-md bg-bg-main-alt text-text-main border border-border focus:outline-none focus:ring-2 focus:ring-accent-start"
+              required
+            />
+          </div>
+          <div>
+            <label for="startTime" class="block text-text-main text-sm font-medium mb-2">
+              Hora de Inicio
+            </label>
+            <input
+              type="time"
+              id="startTime"
+              v-model="election.startTime"
+              class="w-full p-3 rounded-md bg-bg-main-alt text-text-main border border-border focus:outline-none focus:ring-2 focus:ring-accent-start"
+              required
+            />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label for="endDate" class="block text-text-main text-sm font-medium mb-2">
+              Fecha de Finalización
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              v-model="election.endDate"
+              class="w-full p-3 rounded-md bg-bg-main-alt text-text-main border border-border focus:outline-none focus:ring-2 focus:ring-accent-start"
+              required
+            />
+          </div>
+          <div>
+            <label for="endTime" class="block text-text-main text-sm font-medium mb-2">
+              Hora de Finalización
+            </label>
+            <input
+              type="time"
+              id="endTime"
+              v-model="election.endTime"
+              class="w-full p-3 rounded-md bg-bg-main-alt text-text-main border border-border focus:outline-none focus:ring-2 focus:ring-accent-start"
+              required
+            />
+          </div>
         </div>
 
         <!-- Opciones de Votación -->
@@ -169,6 +223,10 @@ import { createOption } from '../services/optionController';
 const election = reactive({
   title: '',
   description: '',
+  startDate: '',
+  startTime: '',
+  endDate: '',
+  endTime: '',
   options: ['', ''], // Start with two default empty options
 });
 
@@ -191,11 +249,14 @@ const submitElection = async () => {
   isLoading.value = true;
 
   try {
+    const startDateTime = `${election.startDate}T${election.startTime}`;
+    const endDateTime = `${election.endDate}T${election.endTime}`;
+
     const eventPayload = {
       title: election.title,
       description: election.description,
-      startTime: new Date(Date.now() - 5 * 60 * 60 * 1000 + 5 * 60 * 1000).toISOString(),
-      endTime: new Date(Date.now() + 19 * 60 * 60 * 1000 + 5 * 60 * 1000).toISOString(),
+      startTime: new Date(startDateTime).toISOString(),
+      endTime: new Date(endDateTime).toISOString(),
     };
 
     const createdEvent = await createVotingEvent(eventPayload);
@@ -229,6 +290,10 @@ const createNewElection = () => {
   // Reset the form for a new election
   election.title = '';
   election.description = '';
+  election.startDate = '';
+  election.startTime = '';
+  election.endDate = '';
+  election.endTime = '';
   election.options = ['', ''];
   closeModal(); // Close the modal
 };

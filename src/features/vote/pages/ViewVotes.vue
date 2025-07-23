@@ -5,33 +5,32 @@
       Descubre las votaciones activas y haz tu elección. ¡Tu voz es importante!
     </p>
     <button
-      v-if="elections.length > 0"
+      v-if="participants.length > 0"
       @click="openAddEventModal"
       class="inline-block bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 mb-8"
     >
       Agregar Evento
     </button>
 
-    <div v-if="elections.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div
+      v-if="participants.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    >
       <div
-        v-for="election in elections"
-        :key="election.id"
+        v-for="participant in participants"
+        :key="participant.id"
         class="bg-card-bg p-6 rounded-lg shadow-xl backdrop-blur-sm border border-border flex flex-col justify-between"
       >
         <div>
-          <h2 class="text-xl font-semibold text-text-main mb-2">{{ election.title }}</h2>
-          <p class="text-text-secondary mb-4 line-clamp-3">{{ election.description }}</p>
-          <p class="text-sm text-text-secondary">
-            Inicio: {{ new Date(election.startTime).toLocaleString() }}
-          </p>
+          <h2 class="text-xl font-semibold text-text-main mb-2">{{ participant.votingTitle }}</h2>
           <p class="text-sm text-text-secondary mb-2">
-            Fin: {{ new Date(election.endTime).toLocaleString() }}
+            Estado de la Votación: {{ participant.votingEventStatus }}
           </p>
+          <p class="text-sm text-text-secondary mb-2">Tu Estado: {{ participant.status }}</p>
         </div>
         <div class="mt-4">
-          <p class="text-sm text-text-secondary mb-2">Estado: {{ election.status }}</p>
           <RouterLink
-            :to="`vote/${election.id}`"
+            :to="`vote/${participant.votingId}`"
             class="block w-full text-center bg-accent-start hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200"
           >
             Ver Detalles y Votar
@@ -139,11 +138,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
-import { getVotingEvents } from '@/features/create/services/eventController';
-import { createParticipantForVotingEvent } from '@/features/vote/services/participantController';
-import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
+import {
+  createParticipantForVotingEvent,
+  getParticipantsForUser,
+} from '@/features/vote/services/participantController';
+import type { Participant } from '@/shared/interfaces/participant.interface';
 
-const elections = ref<VotingEvent[]>([]);
+const participants = ref<Participant[]>([]);
 const showAddEventModal = ref(false);
 const eventCode = ref('');
 const showConfirmationModal = ref(false);
@@ -153,7 +154,7 @@ const confirmationType = ref<'success' | 'error'>('success');
 
 onMounted(async () => {
   try {
-    elections.value = await getVotingEvents();
+    participants.value = await getParticipantsForUser();
   } catch (error) {
     console.error('Error fetching voting events:', error);
   }
