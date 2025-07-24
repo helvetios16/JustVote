@@ -48,7 +48,7 @@ body {
   /* Colores adicionales para botones/estados */
   --color-success: #16a34a; /* green-600 */
   --color-warning: #ea580c; /* orange-600 */
-  --color-info: #0284c7;    /* sky-600 */
+  --color-info: #0284c7; /* sky-600 */
 
   /* Fondo de tarjetas o paneles: oscuro pero elevándose del fondo base */
   --color-card-bg: rgba(17, 24, 39, 0.8);

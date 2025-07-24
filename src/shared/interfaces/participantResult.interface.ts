@@ -1,6 +1,6 @@
 export interface ParticipantResult {
   id: number;
-  status: "VOTED";
+  status: 'VOTED';
   userId: string;
   name: string;
   votingId: string;

@@ -65,9 +65,7 @@ export async function getParticipantsForUser(): Promise<Participant[]> {
     return response.data;
   } catch (error) {
     if (isAxiosError(error) && error.response) {
-      throw new Error(
-        error.response.data.message || 'Failed to fetch participants for the user'
-      );
+      throw new Error(error.response.data.message || 'Failed to fetch participants for the user');
     } else {
       throw new Error('An unexpected error occurred while fetching participants');
     }

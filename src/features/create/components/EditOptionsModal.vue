@@ -105,7 +105,12 @@ watch(
 );
 
 const addOption = () => {
-  editableOptions.value.push({ id: 0, label: '', votingEventId: props.votingEventId, votingEventTitle: '' });
+  editableOptions.value.push({
+    id: 0,
+    label: '',
+    votingEventId: props.votingEventId,
+    votingEventTitle: '',
+  });
 };
 
 const removeOption = (index: number) => {
