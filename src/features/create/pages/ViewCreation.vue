@@ -90,6 +90,7 @@
               Cambiar Título/Descripción
             </button>
             <button
+              @click="isEditOptionsModalVisible = true"
               class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
             >
               Cambiar/Agregar Opciones
@@ -155,6 +156,14 @@
       @close="isEditModalVisible = false"
       @save="handleUpdateEventDetails"
     />
+
+    <EditOptionsModal
+      :is-visible="isEditOptionsModalVisible"
+      :current-options="selectedEventOptions"
+      :voting-event-id="props.id"
+      @close="isEditOptionsModalVisible = false"
+      @save="handleUpdateOptions"
+    />
   </div>
 </template>
 
@@ -170,10 +179,12 @@ import {
 import { getVotingEventById } from '@/features/vote/services/voteEvent';
 import { getOptionsByVotingEventId } from '@/features/vote/services/voteEvent';
 import { getParticipantsByVotingEventId } from '@/features/create/services/participantController';
+import { createOption, updateOption, deleteOption } from '@/features/create/services/optionController';
 import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
 import type { Option } from '@/shared/interfaces/option.interface';
 import type { ParticipantResult } from '@/shared/interfaces/participantResult.interface';
 import EditEventDetailsModal from '@/features/create/components/EditEventDetailsModal.vue';
+import EditOptionsModal from '@/features/create/components/EditOptionsModal.vue';
 
 const props = defineProps<{ id: string }>();
 
@@ -183,6 +194,7 @@ const participants = ref<ParticipantResult[]>([]);
 const showNotification = ref(false);
 const notificationMessage = ref('');
 const isEditModalVisible = ref(false);
+const isEditOptionsModalVisible = ref(false);
 
 const handleOpenEvent = async () => {
   if (!props.id) return;
@@ -247,28 +259,53 @@ const handleDeleteEvent = async () => {
   }
 };
 
-const handleUpdateEventDetails = async (
-  newTitle: string,
-  newDescription: string,
-  newStartTime: string,
-  newEndTime: string,
-) => {
+const handleUpdateOptions = async (updatedOptions: Option[]) => {
   if (!props.id) return;
   try {
-    await updateVotingEvent(props.id, {
-      title: newTitle,
-      description: newDescription,
-      startTime: new Date(newStartTime).toISOString(),
-      endTime: new Date(newEndTime).toISOString(),
-    });
-    notificationMessage.value = 'Detalles del evento actualizados con éxito!';
+    const existingOptionIds = new Set(selectedEventOptions.value.map((opt) => opt.id));
+    const updatedOptionIds = new Set(updatedOptions.map((opt) => opt.id).filter((id) => id !== 0));
+
+    // Identify options to delete
+    const optionsToDelete = selectedEventOptions.value.filter(
+      (opt) => !updatedOptionIds.has(opt.id),
+    );
+
+    // Identify options to create or update
+    const optionsToProcess = updatedOptions.filter((opt) => opt.label.trim() !== '');
+
+    const promises: Promise<any>[] = [];
+
+    for (const option of optionsToDelete) {
+      if (option.id) {
+        promises.push(deleteOption(option.id));
+      }
+    }
+
+    for (const option of optionsToProcess) {
+      if (option.id && existingOptionIds.has(option.id)) {
+        // Update existing option
+        const originalOption = selectedEventOptions.value.find((opt) => opt.id === option.id);
+        if (originalOption && originalOption.label !== option.label) {
+          promises.push(
+            updateOption(option.id, { eventId: props.id, label: option.label }),
+          );
+        }
+      } else if (!option.id) {
+        // Create new option
+        promises.push(createOption({ eventId: props.id, label: option.label }));
+      }
+    }
+
+    await Promise.all(promises);
+
+    notificationMessage.value = 'Opciones actualizadas con éxito!';
     showNotification.value = true;
-    isEditModalVisible.value = false;
-    // Refresh event details to show updated status
-    selectedEventDetails.value = await getVotingEventById(props.id);
+    isEditOptionsModalVisible.value = false;
+    // Refresh options to show updated status
+    selectedEventOptions.value = await getOptionsByVotingEventId(props.id);
   } catch (error) {
-    console.error('Error al actualizar los detalles del evento:', error);
-    notificationMessage.value = 'Error al actualizar los detalles del evento.';
+    console.error('Error al actualizar las opciones:', error);
+    notificationMessage.value = 'Error al actualizar las opciones.';
     showNotification.value = true;
   } finally {
     setTimeout(() => {

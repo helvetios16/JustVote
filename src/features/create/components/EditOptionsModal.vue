@@ -9,26 +9,58 @@
       <h2 class="text-2xl font-bold text-text-main mb-6">Cambiar/Agregar Opciones</h2>
 
       <div class="mb-4">
-        <h3 class="text-xl font-bold text-text-main mb-2">Opciones Actuales:</h3>
-        <ul v-if="currentOptions.length > 0" class="list-disc list-inside text-text-secondary mb-4">
-          <li v-for="option in currentOptions" :key="option.id" class="mb-1">
-            {{ option.label }}
-          </li>
-        </ul>
-        <p v-else class="text-text-secondary mb-4">No hay opciones definidas aún.</p>
-      </div>
-
-      <div class="mb-6">
-        <label for="newOption" class="block text-text-secondary text-sm font-bold mb-2"
-          >Nueva Opción:</label
+        <h3 class="text-xl font-bold text-text-main mb-2">Opciones:</h3>
+        <div
+          v-for="(option, index) in editableOptions"
+          :key="option.id || `new-${index}`"
+          class="flex gap-3 mb-3 items-center"
         >
-        <input
-          type="text"
-          id="newOption"
-          v-model="newOptionLabel"
-          class="shadow appearance-none border border-border rounded w-full py-2 px-3 text-text-main leading-tight focus:outline-none focus:shadow-outline bg-bg-main-alt"
-          placeholder="Escribe una nueva opción"
-        />
+          <input
+            type="text"
+            v-model="option.label"
+            :placeholder="`Opción ${index + 1}`"
+            class="flex-grow p-3 rounded-md bg-bg-main-alt text-text-main border border-border focus:outline-none focus:ring-2 focus:ring-accent-start"
+            required
+          />
+          <button
+            @click="removeOption(index)"
+            type="button"
+            class="text-text-secondary hover:text-red-500 transition-colors duration-200 p-2"
+            title="Eliminar opción"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+          </button>
+        </div>
+        <button
+          @click="addOption"
+          type="button"
+          class="flex items-center gap-2 text-accent-start hover:text-fuchsia-500 transition-colors duration-200 mt-2 px-3 py-2 rounded-md"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Agregar Opción
+        </button>
       </div>
 
       <div class="flex justify-end space-x-4">
@@ -39,11 +71,10 @@
           Cancelar
         </button>
         <button
-          @click="handleAddOption"
-          :disabled="!newOptionLabel.trim()"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          @click="handleSave"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200"
         >
-          Agregar Opción
+          Guardar Cambios
         </button>
       </div>
     </div>
@@ -57,28 +88,33 @@ import type { Option } from '@/shared/interfaces/option.interface';
 const props = defineProps<{
   isVisible: boolean;
   currentOptions: Option[];
+  votingEventId: string;
 }>();
 
-const emit = defineEmits(['close', 'addOption']);
+const emit = defineEmits(['close', 'save']);
 
-const newOptionLabel = ref('');
+const editableOptions = ref<Option[]>([]);
 
-const handleAddOption = () => {
-  if (newOptionLabel.value.trim()) {
-    emit('addOption', newOptionLabel.value.trim());
-    newOptionLabel.value = ''; // Clear input after adding
-  }
-};
-
-// Reset newOptionLabel when modal opens
 watch(
   () => props.isVisible,
   (newVal) => {
     if (newVal) {
-      newOptionLabel.value = '';
+      editableOptions.value = JSON.parse(JSON.stringify(props.currentOptions));
     }
   },
 );
+
+const addOption = () => {
+  editableOptions.value.push({ id: 0, label: '', votingEventId: props.votingEventId, votingEventTitle: '' });
+};
+
+const removeOption = (index: number) => {
+  editableOptions.value.splice(index, 1);
+};
+
+const handleSave = () => {
+  emit('save', editableOptions.value);
+};
 </script>
 
 <style scoped>
