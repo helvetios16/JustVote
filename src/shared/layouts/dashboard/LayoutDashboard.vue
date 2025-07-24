@@ -26,4 +26,9 @@ import AppSidebar from './components/AppSidebar.vue';
 .fade-leave-to {
   opacity: 0;
 }
+
+html,
+body {
+  overflow-x: hidden;
+}
 </style>

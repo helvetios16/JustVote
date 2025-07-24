@@ -179,4 +179,3 @@ const logout = () => {
   font-weight: bold;
 }
 </style>
-

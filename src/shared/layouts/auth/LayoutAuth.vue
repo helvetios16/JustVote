@@ -3,7 +3,9 @@ import HeaderAuth from '@/shared/layouts/auth/components/HeaderAuth.vue';
 </script>
 
 <template>
-  <div class="gradient-bg min-h-screen flex flex-col items-center justify-center text-text-main">
+  <div
+    class="gradient-bg min-h-screen flex flex-col items-center justify-center text-text-main overflow-hidden"
+  >
     <div
       class="subtle-glow w-[400px] h-[400px] bg-purple-600 top-[-100px] right-[-80px] animate-pulse"
     ></div>
@@ -30,6 +32,7 @@ import HeaderAuth from '@/shared/layouts/auth/components/HeaderAuth.vue';
 <style scoped>
 .gradient-bg {
   background: linear-gradient(to right, #0f172a, #1e1b4b);
+  position: relative;
 }
 .fade-enter-active,
 .fade-leave-active {
@@ -47,5 +50,10 @@ import HeaderAuth from '@/shared/layouts/auth/components/HeaderAuth.vue';
   filter: blur(80px);
   opacity: 0.3;
   pointer-events: none;
+}
+
+html,
+body {
+  overflow-x: hidden;
 }
 </style>

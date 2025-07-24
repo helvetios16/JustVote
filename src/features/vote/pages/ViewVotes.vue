@@ -1,5 +1,5 @@
 <template>
-  <div class="ml-8 mt-[48px] w-[calc(100%-240px-2rem)] pr-8">
+  <div class="mt-[48px] w-full px-8">
     <h1 class="text-3xl font-bold text-text-main mb-6">Elecciones Disponibles 🗳️</h1>
     <p class="text-lg text-text-secondary mb-8">
       Descubre las votaciones activas y haz tu elección. ¡Tu voz es importante!

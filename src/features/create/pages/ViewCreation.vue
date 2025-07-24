@@ -179,7 +179,11 @@ import {
 import { getVotingEventById } from '@/features/vote/services/voteEvent';
 import { getOptionsByVotingEventId } from '@/features/vote/services/voteEvent';
 import { getParticipantsByVotingEventId } from '@/features/create/services/participantController';
-import { createOption, updateOption, deleteOption } from '@/features/create/services/optionController';
+import {
+  createOption,
+  updateOption,
+  deleteOption,
+} from '@/features/create/services/optionController';
 import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
 import type { Option } from '@/shared/interfaces/option.interface';
 import type { ParticipantResult } from '@/shared/interfaces/participantResult.interface';
@@ -286,9 +290,7 @@ const handleUpdateOptions = async (updatedOptions: Option[]) => {
         // Update existing option
         const originalOption = selectedEventOptions.value.find((opt) => opt.id === option.id);
         if (originalOption && originalOption.label !== option.label) {
-          promises.push(
-            updateOption(option.id, { eventId: props.id, label: option.label }),
-          );
+          promises.push(updateOption(option.id, { eventId: props.id, label: option.label }));
         }
       } else if (!option.id) {
         // Create new option

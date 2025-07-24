@@ -1,11 +1,13 @@
 <template>
-  <div class="mt-[48px] pr-8 w-full mx-8">
+  <div class="mt-[48px] w-full px-8">
     <h1 class="text-3xl font-bold text-text-main mb-6">Crea Tu Nueva Elección 🎉</h1>
-    <p class="text-lg text-text-secondary mb-8">
+    <p class="text-lg text-text-secondary mb-4">
       Define los detalles clave de tu votación para que otros puedan participar.
     </p>
 
-    <div class="bg-card-bg p-8 rounded-lg shadow-xl backdrop-blur-sm border border-border">
+    <div
+      class="bg-card-bg p-8 rounded-lg shadow-xl backdrop-blur-sm border border-border w-full max-w-4xl mx-auto"
+    >
       <form @submit.prevent="submitElection">
         <!-- Título de la Elección -->
         <div class="mb-6">
