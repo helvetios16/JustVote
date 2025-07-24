@@ -15,8 +15,7 @@ Este proyecto está desarrollado con Vue 3 y Vite, enfocado en crear una platafo
 - Dashboard interactivo para usuarios
 - Creación y gestión de votaciones
 - Participación en eventos de votación
-- Historial de votaciones
-- Interfaz moderna con animaciones y diseño responsivo
+- Interfaz moderna con animaciones
 
 ## Estructura del Proyecto
 
@@ -31,7 +30,6 @@ Este proyecto está desarrollado con Vue 3 y Vite, enfocado en crear una platafo
 - Creación de nuevas votaciones
 - Gestión de votaciones creadas
 - Participación en votaciones activas
-- Visualización del historial de participación
 
 ## Configuración del IDE Recomendada
 
