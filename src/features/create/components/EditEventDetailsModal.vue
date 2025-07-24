@@ -32,6 +32,56 @@
         ></textarea>
       </div>
 
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label for="editStartDate" class="block text-text-secondary text-sm font-bold mb-2"
+            >Fecha de Inicio:</label
+          >
+          <input
+            type="date"
+            id="editStartDate"
+            v-model="editedStartDate"
+            class="shadow appearance-none border border-border rounded w-full py-2 px-3 text-text-main leading-tight focus:outline-none focus:shadow-outline bg-bg-main-alt"
+          />
+        </div>
+        <div>
+          <label for="editStartTime" class="block text-text-secondary text-sm font-bold mb-2"
+            >Hora de Inicio:</label
+          >
+          <input
+            type="time"
+            id="editStartTime"
+            v-model="editedStartTime"
+            class="shadow appearance-none border border-border rounded w-full py-2 px-3 text-text-main leading-tight focus:outline-none focus:shadow-outline bg-bg-main-alt"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label for="editEndDate" class="block text-text-secondary text-sm font-bold mb-2"
+            >Fecha de Finalización:</label
+          >
+          <input
+            type="date"
+            id="editEndDate"
+            v-model="editedEndDate"
+            class="shadow appearance-none border border-border rounded w-full py-2 px-3 text-text-main leading-tight focus:outline-none focus:shadow-outline bg-bg-main-alt"
+          />
+        </div>
+        <div>
+          <label for="editEndTime" class="block text-text-secondary text-sm font-bold mb-2"
+            >Hora de Finalización:</label
+          >
+          <input
+            type="time"
+            id="editEndTime"
+            v-model="editedEndTime"
+            class="shadow appearance-none border border-border rounded w-full py-2 px-3 text-text-main leading-tight focus:outline-none focus:shadow-outline bg-bg-main-alt"
+          />
+        </div>
+      </div>
+
       <div class="flex justify-end space-x-4">
         <button
           @click="$emit('close')"
@@ -57,12 +107,18 @@ const props = defineProps<{
   isVisible: boolean;
   currentTitle: string;
   currentDescription: string;
+  currentStartTime: string;
+  currentEndTime: string;
 }>();
 
 const emit = defineEmits(['close', 'save']);
 
 const editedTitle = ref(props.currentTitle);
 const editedDescription = ref(props.currentDescription);
+const editedStartDate = ref('');
+const editedStartTime = ref('');
+const editedEndDate = ref('');
+const editedEndTime = ref('');
 
 watch(
   () => props.isVisible,
@@ -70,12 +126,23 @@ watch(
     if (newVal) {
       editedTitle.value = props.currentTitle;
       editedDescription.value = props.currentDescription;
+
+      const start = new Date(props.currentStartTime);
+      const end = new Date(props.currentEndTime);
+
+      editedStartDate.value = start.toISOString().split('T')[0];
+      editedStartTime.value = start.toTimeString().split(' ')[0].substring(0, 5);
+      editedEndDate.value = end.toISOString().split('T')[0];
+      editedEndTime.value = end.toTimeString().split(' ')[0].substring(0, 5);
     }
   },
 );
 
 const handleSave = () => {
-  emit('save', editedTitle.value, editedDescription.value);
+  const startDateTime = `${editedStartDate.value}T${editedStartTime.value}`;
+  const endDateTime = `${editedEndDate.value}T${editedEndTime.value}`;
+
+  emit('save', editedTitle.value, editedDescription.value, startDateTime, endDateTime);
 };
 </script>
 

@@ -34,3 +34,35 @@ export async function createOption(payload: CreateOptionPayload): Promise<Option
   }
 }
 
+/**
+ * Fetches options for a specific voting event from the API.
+ * Requires an authentication token.
+ * @param votingEventId - The ID of the voting event.
+ * @returns A Promise that resolves to an array of Option objects.
+ * @throws An Error if no authentication token is found, or if the API request fails.
+ */
+export async function getOptionsByVotingEventId(votingEventId: string): Promise<Option[]> {
+  try {
+    const token = getToken();
+    if (!token) {
+      throw new Error('No authentication token found.');
+    }
+
+    const response = await api.get<Option[]>(`/option/voting-event/${votingEventId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      throw new Error(
+        error.response.data.message ||
+          `Failed to fetch options for voting event ID ${votingEventId}`,
+      );
+    } else {
+      throw new Error('An unexpected error occurred while fetching options by voting event ID');
+    }
+  }
+}

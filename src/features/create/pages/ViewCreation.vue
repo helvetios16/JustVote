@@ -150,6 +150,8 @@
       :is-visible="isEditModalVisible"
       :current-title="selectedEventDetails?.title || ''"
       :current-description="selectedEventDetails?.description || ''"
+      :current-start-time="selectedEventDetails?.startTime || ''"
+      :current-end-time="selectedEventDetails?.endTime || ''"
       @close="isEditModalVisible = false"
       @save="handleUpdateEventDetails"
     />
@@ -172,7 +174,6 @@ import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
 import type { Option } from '@/shared/interfaces/option.interface';
 import type { ParticipantResult } from '@/shared/interfaces/participantResult.interface';
 import EditEventDetailsModal from '@/features/create/components/EditEventDetailsModal.vue';
-import EditOptionsModal from '@/features/create/components/EditOptionsModal.vue';
 
 const props = defineProps<{ id: string }>();
 
@@ -246,10 +247,20 @@ const handleDeleteEvent = async () => {
   }
 };
 
-const handleUpdateEventDetails = async (newTitle: string, newDescription: string) => {
+const handleUpdateEventDetails = async (
+  newTitle: string,
+  newDescription: string,
+  newStartTime: string,
+  newEndTime: string,
+) => {
   if (!props.id) return;
   try {
-    await updateVotingEvent(props.id, { title: newTitle, description: newDescription });
+    await updateVotingEvent(props.id, {
+      title: newTitle,
+      description: newDescription,
+      startTime: new Date(newStartTime).toISOString(),
+      endTime: new Date(newEndTime).toISOString(),
+    });
     notificationMessage.value = 'Detalles del evento actualizados con éxito!';
     showNotification.value = true;
     isEditModalVisible.value = false;

@@ -133,20 +133,18 @@ export async function updateVotingEvent(
  * @returns A Promise that resolves to the opened VotingEvent object.
  * @throws An Error if no authentication token is found, or if the API request fails.
  */
-export async function openVotingEvent(id: string): Promise<VotingEvent> {
+export async function openVotingEvent(id: string): Promise<void> {
   try {
     const token = getToken();
     if (!token) {
       throw new Error('No authentication token found.');
     }
 
-    const response = await api.patch<VotingEvent>(`/voting-event/open/${id}`, {
+    await api.patch<VotingEvent>(`/voting-event/open/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    return response.data;
   } catch (error) {
     if (isAxiosError(error) && error.response) {
       throw new Error(error.response.data.message || `Failed to open voting event with ID ${id}`);
@@ -163,20 +161,18 @@ export async function openVotingEvent(id: string): Promise<VotingEvent> {
  * @returns A Promise that resolves to the closed VotingEvent object.
  * @throws An Error if no authentication token is found, or if the API request fails.
  */
-export async function closeVotingEvent(id: string): Promise<VotingEvent> {
+export async function closeVotingEvent(id: string): Promise<void> {
   try {
     const token = getToken();
     if (!token) {
       throw new Error('No authentication token found.');
     }
 
-    const response = await api.patch<VotingEvent>(`/voting-event/close/${id}`, {
+    await api.patch<VotingEvent>(`/voting-event/close/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    return response.data;
   } catch (error) {
     if (isAxiosError(error) && error.response) {
       throw new Error(error.response.data.message || `Failed to close voting event with ID ${id}`);
