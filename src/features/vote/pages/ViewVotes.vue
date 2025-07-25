@@ -30,11 +30,24 @@
         </div>
         <div class="mt-4">
           <RouterLink
+            v-if="participant.votingEventStatus === 'OPENED' && participant.status !== 'BANNED'"
             :to="`vote/${participant.votingId}`"
             class="block w-full text-center bg-accent-start hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200"
           >
-            Ver Detalles y Votar
+            {{ participant.status === 'VOTED' ? 'Ver Resultados' : 'Ver Detalles y Votar' }}
           </RouterLink>
+          <div
+            v-else-if="participant.votingEventStatus === 'CLOSED'"
+            class="block w-full text-center bg-gray-500 text-white font-bold py-2 px-4 rounded-lg cursor-not-allowed"
+          >
+            Votación Cerrada
+          </div>
+          <div
+            v-else-if="participant.status === 'BANNED'"
+            class="block w-full text-center bg-red-500 text-white font-bold py-2 px-4 rounded-lg cursor-not-allowed"
+          >
+            Acceso Denegado
+          </div>
         </div>
       </div>
     </div>

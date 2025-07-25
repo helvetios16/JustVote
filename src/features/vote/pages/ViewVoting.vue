@@ -65,15 +65,15 @@
 
         <button
           @click="submitVote"
-          :disabled="!selectedOption || isLoading"
+          :disabled="!selectedOption || isLoading || !canVote()"
           class="w-full bg-gradient-to-r from-accent-start to-accent-end hover:from-indigo-700 hover:to-fuchsia-600 text-white font-extrabold py-4 px-6 rounded-xl transition-all duration-300 text-xl flex items-center justify-center gap-3 shadow-lg transform hover:scale-102"
-          :class="{ 'opacity-70 cursor-not-allowed': !selectedOption || isLoading }"
+          :class="{ 'opacity-70 cursor-not-allowed': !selectedOption || isLoading || !canVote() }"
         >
           <span
             v-if="isLoading"
             class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-7 w-7"
           ></span>
-          {{ isLoading ? 'Enviando Voto...' : 'Votar Ahora' }}
+          {{ getButtonText() }}
         </button>
       </div>
     </div>
@@ -145,18 +145,20 @@
 import { ref, watchEffect } from 'vue';
 import { useRouter, RouterLink } from 'vue-router';
 import {
-  getVotingEventById,
   getOptionsByVotingEventId,
   createVoteByOptionId,
 } from '@/features/vote/services/voteEvent';
+import { getParticipantsForUser } from '@/features/vote/services/participantController';
 import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
 import type { Option } from '@/shared/interfaces/option.interface';
+import type { Participant } from '@/shared/interfaces/participant.interface';
 
 const router = useRouter();
 
 const props = defineProps<{ id: string }>();
 
 const voting = ref<VotingEvent | undefined>(undefined);
+const participant = ref<Participant | undefined>(undefined);
 const options = ref<Option[]>([]);
 const selectedOption = ref<string | null>(null);
 const isLoading = ref(false);
@@ -168,23 +170,88 @@ const modalType = ref<'success' | 'error'>('success');
 watchEffect(async () => {
   if (props.id) {
     try {
-      voting.value = await getVotingEventById(props.id);
+      // Get all participants for user and filter by voting ID
+      const participants = await getParticipantsForUser();
+      const foundParticipant = participants.find(p => p.votingId === props.id);
+      
+      if (!foundParticipant) {
+        console.warn('User is not a participant in this voting event');
+        voting.value = undefined;
+        participant.value = undefined;
+        return;
+      }
+      
+      // Set participant data
+      participant.value = foundParticipant;
+      
+      // Transform participant data to VotingEvent format
+      voting.value = {
+        id: foundParticipant.votingId,
+        title: foundParticipant.votingTitle,
+        description: foundParticipant.eventDescription,
+        startTime: '', // Not available in participant data
+        endTime: '', // Not available in participant data
+        userId: foundParticipant.userId,
+        userName: foundParticipant.name,
+        status: foundParticipant.votingEventStatus,
+      };
+      
+      // Check if voting is still open and user can vote
+      if (foundParticipant.votingEventStatus !== 'OPENED') {
+        console.warn('Voting event is closed');
+      }
+      
+      if (foundParticipant.status === 'BANNED') {
+        console.warn('User is banned from this voting event');
+      }
+      
       options.value = await getOptionsByVotingEventId(props.id);
       selectedOption.value = null;
     } catch (error) {
       console.error('Error fetching voting event or options:', error);
-      voting.value = undefined; // Indicate that the event was not found or an error occurred
+      voting.value = undefined;
+      participant.value = undefined;
     }
   } else {
     voting.value = undefined;
+    participant.value = undefined;
   }
 });
 
+// Helper functions
+const canVote = () => {
+  return voting.value?.status === 'OPENED' && 
+         participant.value?.status !== 'BANNED' && 
+         participant.value?.status !== 'VOTED';
+};
+
+const getButtonText = () => {
+  if (isLoading.value) return 'Enviando Voto...';
+  if (voting.value?.status === 'CLOSED') return 'Votación Cerrada';
+  if (participant.value?.status === 'BANNED') return 'Acceso Denegado';
+  if (participant.value?.status === 'VOTED') return 'Ya Has Votado';
+  return 'Votar Ahora';
+};
+
 const submitVote = async () => {
-  if (!selectedOption.value || !voting.value) {
+  if (!selectedOption.value || !voting.value || !canVote()) {
     modalType.value = 'error';
     modalTitle.value = 'Error de Votación';
-    modalMessage.value = 'Por favor, selecciona una opción antes de votar.';
+    
+    if (!canVote()) {
+      if (participant.value?.status === 'BANNED') {
+        modalMessage.value = 'No tienes acceso para votar en esta elección.';
+      } else if (participant.value?.status === 'VOTED') {
+        modalMessage.value = 'Ya has votado en esta elección.';
+      } else if (voting.value?.status === 'CLOSED') {
+        modalMessage.value = 'Esta votación ya ha cerrado.';
+      } else {
+        modalMessage.value = 'No puedes votar en esta elección en este momento.';
+      }
+    } else {
+      modalMessage.value = 'Por favor, selecciona una opción antes de votar.';
+    }
+    
     showModal.value = true;
     return;
   }

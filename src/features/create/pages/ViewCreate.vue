@@ -55,7 +55,7 @@
           </div>
           <div>
             <label for="startTime" class="block text-text-main text-sm font-medium mb-2">
-              Hora de Inicio
+              Hora de Inicio (UTC)
             </label>
             <input
               type="time"
@@ -64,6 +64,7 @@
               class="w-full p-3 rounded-md bg-bg-main-alt text-text-main border border-border focus:outline-none focus:ring-2 focus:ring-accent-start"
               required
             />
+            <p class="text-xs text-text-secondary mt-1">Formato 24 horas en UTC</p>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -81,7 +82,7 @@
           </div>
           <div>
             <label for="endTime" class="block text-text-main text-sm font-medium mb-2">
-              Hora de Finalización
+              Hora de Finalización (UTC)
             </label>
             <input
               type="time"
@@ -90,6 +91,7 @@
               class="w-full p-3 rounded-md bg-bg-main-alt text-text-main border border-border focus:outline-none focus:ring-2 focus:ring-accent-start"
               required
             />
+            <p class="text-xs text-text-secondary mt-1">Formato 24 horas en UTC</p>
           </div>
         </div>
 
@@ -251,8 +253,9 @@ const submitElection = async () => {
   isLoading.value = true;
 
   try {
-    const startDateTime = `${election.startDate}T${election.startTime}`;
-    const endDateTime = `${election.endDate}T${election.endTime}`;
+    // Use UTC timezone to avoid local timezone issues
+    const startDateTime = `${election.startDate}T${election.startTime}:00.000Z`;
+    const endDateTime = `${election.endDate}T${election.endTime}:00.000Z`;
 
     const eventPayload = {
       title: election.title,

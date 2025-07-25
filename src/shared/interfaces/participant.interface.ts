@@ -9,4 +9,5 @@ export interface Participant {
   votingId: string;
   votingTitle: string;
   votingEventStatus: VotingEventStatusValue;
+  eventDescription: string;
 }
