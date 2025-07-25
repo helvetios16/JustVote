@@ -263,6 +263,36 @@ const handleDeleteEvent = async () => {
   }
 };
 
+const handleUpdateEventDetails = async (
+  title: string,
+  description: string,
+  startTime: string,
+  endTime: string,
+) => {
+  if (!props.id) return;
+  try {
+    await updateVotingEvent(props.id, {
+      title,
+      description,
+      startTime,
+      endTime,
+    });
+    notificationMessage.value = 'Detalles del evento actualizados con éxito!';
+    showNotification.value = true;
+    isEditModalVisible.value = false;
+    // Refresh event details to show updated information
+    selectedEventDetails.value = await getVotingEventById(props.id);
+  } catch (error) {
+    console.error('Error al actualizar los detalles del evento:', error);
+    notificationMessage.value = 'Error al actualizar los detalles del evento.';
+    showNotification.value = true;
+  } finally {
+    setTimeout(() => {
+      showNotification.value = false;
+    }, 3000);
+  }
+};
+
 const handleUpdateOptions = async (updatedOptions: Option[]) => {
   if (!props.id) return;
   try {
