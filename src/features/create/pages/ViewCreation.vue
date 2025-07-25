@@ -64,14 +64,11 @@
               Cerrar Votación
             </button>
             <button
-              @click="
-                () => {
-                  /* Implement PDF generation logic here */
-                }
-              "
-              class="w-full bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg"
+              @click="handleGeneratePDF"
+              :disabled="isGeneratingPDF"
+              class="w-full bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Generar PDF
+              {{ isGeneratingPDF ? 'Generando PDF...' : 'Generar PDF' }}
             </button>
             <button
               @click="handleDeleteEvent"
@@ -184,6 +181,7 @@ import {
   updateOption,
   deleteOption,
 } from '@/features/create/services/optionController';
+import { generateVotingReportPDF } from '@/features/create/services/pdfGenerate';
 import type { VotingEvent } from '@/shared/interfaces/votingEvent.interface';
 import type { Option } from '@/shared/interfaces/option.interface';
 import type { ParticipantResult } from '@/shared/interfaces/participantResult.interface';
@@ -199,6 +197,7 @@ const showNotification = ref(false);
 const notificationMessage = ref('');
 const isEditModalVisible = ref(false);
 const isEditOptionsModalVisible = ref(false);
+const isGeneratingPDF = ref(false);
 
 const handleOpenEvent = async () => {
   if (!props.id) return;
@@ -287,6 +286,46 @@ const handleUpdateEventDetails = async (
     notificationMessage.value = 'Error al actualizar los detalles del evento.';
     showNotification.value = true;
   } finally {
+    setTimeout(() => {
+      showNotification.value = false;
+    }, 3000);
+  }
+};
+
+const handleGeneratePDF = async () => {
+  if (!selectedEventDetails.value || isGeneratingPDF.value) {
+    if (!selectedEventDetails.value) {
+      notificationMessage.value = 'No hay datos del evento para generar el PDF.';
+      showNotification.value = true;
+      setTimeout(() => {
+        showNotification.value = false;
+      }, 3000);
+    }
+    return;
+  }
+
+  try {
+    isGeneratingPDF.value = true;
+    notificationMessage.value = 'Generando PDF...';
+    showNotification.value = true;
+
+    const fileName = `reporte-votacion-${selectedEventDetails.value.title.replace(/\s+/g, '-').toLowerCase()}.pdf`;
+    
+    await generateVotingReportPDF(
+      selectedEventDetails.value,
+      selectedEventOptions.value,
+      participants.value,
+      fileName
+    );
+
+    notificationMessage.value = 'PDF generado y descargado con éxito!';
+    showNotification.value = true;
+  } catch (error) {
+    console.error('Error al generar el PDF:', error);
+    notificationMessage.value = 'Error al generar el PDF.';
+    showNotification.value = true;
+  } finally {
+    isGeneratingPDF.value = false;
     setTimeout(() => {
       showNotification.value = false;
     }, 3000);
